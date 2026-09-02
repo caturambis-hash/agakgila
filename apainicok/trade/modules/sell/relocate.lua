@@ -16,7 +16,7 @@ return function(ctx)
 	local function log(m) ctx.log(m) end
 	local function setStatus(s) ctx.setStatus(s) end
 
-	local ROUTER = "loadstring(game:HttpGet('https://raw.githubusercontent.com/Tirta71/ScriptMarketGAG/main/GAGSeller/init.lua'))()"
+	local ROUTER = "loadstring(game:HttpGet('https://raw.githubusercontent.com/caturambis-hash/agakgila/main/apainicok/init.lua'))()"
 
 	-- waktu jual terakhir; reset tiap ada yang beli dari kita -> penanda booth aktif.
 	ctx.state.lastSaleAt = os.time()
