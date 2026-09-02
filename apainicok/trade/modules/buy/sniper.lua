@@ -27,7 +27,7 @@ return function(ctx)
 	-- di-destroy langsung berhenti -> ga ada dobel sniper.
 	local function running() return ctx.state.snipeRunning == true and ctx.alive() end
 
-	local ROUTER = "loadstring(game:HttpGet('https://raw.githubusercontent.com/Tirta71/ScriptMarketGAG/main/GAGSeller/init.lua'))()"
+	local ROUTER = "loadstring(game:HttpGet('https://raw.githubusercontent.com/caturambis-hash/agakgila/main/apainicok/init.lua'))()"
 
 	------------------------------------------------------------------ helpers
 	local function buildItemData(petType)
