@@ -1,6 +1,6 @@
 -- AUTO-GENERATED oleh tools/bundle.js — JANGAN edit manual.
 -- Edit modul-nya langsung, terus run `node tools/bundle.js`.
--- 43 modul, di-generate 2026-08-30T03:26:50.692Z
+-- 43 modul, di-generate 2026-09-02T09:04:00.475Z
 return {
 	["app.lua"] = [=[
 --[[ app.lua — init akhir garden: default tab Inventory + auto-resume automation. ]]
@@ -28,7 +28,7 @@ return function(ctx)
 		local title = Instance.new("TextLabel")
 		title.BackgroundTransparency = 1; title.Size = UDim2.new(1, -14, 0, 18)
 		title.Font = Enum.Font.GothamBold; title.TextSize = 14; title.TextXAlignment = Enum.TextXAlignment.Left
-		title.RichText = true; title.Text = 'CeszParadiseHub <font color="#f6c518">Notification</font>'
+		title.RichText = true; title.Text = 'AllegiaantHub <font color="#f6c518">Notification</font>'
 		title.TextColor3 = C.txt or Color3.fromRGB(235, 238, 242); title.Parent = f
 		local body = Instance.new("TextLabel")
 		body.BackgroundTransparency = 1; body.Size = UDim2.new(1, -14, 0, 16); body.Position = UDim2.fromOffset(0, 24)
@@ -55,7 +55,7 @@ return function(ctx)
 	end
 	selectTab("Inventory")
 
-	ctx.log("CeszParadiseHub Garden dimuat.")
+	ctx.log("AllegiaantHub Garden dimuat.")
 	ctx.setStatus("idle")
 
 	-- Anti-AFK: reset timer idle Roblox (kick ~20 menit) tiap Idled fire, via VirtualUser.
@@ -935,7 +935,7 @@ local function sendWebhook(url, payload, ctx)
 
 	-- Nama & avatar pengirim webhook (override default). Semua notif tampil "CeszParadiseHub".
 	if type(payload) == "table" then
-		if not payload.username then payload.username = "CeszParadiseHub" end
+		if not payload.username then payload.username = "CeszParadise" end
 		if not payload.avatar_url then payload.avatar_url = "https://i.pinimg.com/736x/52/0e/d5/520ed52b650b318e20e9460eca77ced8.jpg" end
 	end
 	
@@ -1687,7 +1687,7 @@ end
 local HttpService = game:GetService("HttpService")
 local elephantWebhook = {}
 
-local USERNAME = "CeszParadiseHub"
+local USERNAME = "CeszParadise"
 local AVATAR = "https://i.pinimg.com/736x/52/0e/d5/520ed52b650b318e20e9460eca77ced8.jpg"
 
 local function bracketLabel(w)
@@ -1948,7 +1948,7 @@ return function(ctx)
 		local q = (syn and syn.queue_on_teleport) or queue_on_teleport
 			or (fluxus and fluxus.queue_on_teleport) or (getgenv and getgenv().queue_on_teleport)
 		if q then
-			local cmd = ('if getgenv then getgenv().GAG_BRANCH=%q end loadstring(game:HttpGet("https://raw.githubusercontent.com/caturambis-hash/agakgila/%s/apainicok/init.lua"))()'):format(branch, branch)
+			local cmd = ('if getgenv then getgenv().GAG_BRANCH=%q end loadstring(game:HttpGet("https://raw.githubusercontent.com/Tirta71/ScriptMarketGAG/%s/GAGSeller/init.lua"))()'):format(branch, branch)
 			pcall(function() q(cmd) end)
 		end
 	end
@@ -4736,7 +4736,7 @@ return function(ctx)
 		local payload = {
 			content = "@everyone",
 			embeds = { {
-				title = "CeszParadiseHub \u{2014} Hatch Alerts",
+				title = "CeszParadise \u{2014} Hatch Alerts",
 				color = 5814783,
 				fields = {
 					{ name = "Profile :", value = ("> Username : ||%s||"):format(LP.Name), inline = false },
@@ -5218,7 +5218,7 @@ return function(ctx)
 			end
 		end)
 	else
-		warn("[CeszParadiseHub] GiftPet/AcceptPetGift remote tidak ketemu — auto accept gift nonaktif.")
+		warn("[CeszParadise] GiftPet/AcceptPetGift remote tidak ketemu — auto accept gift nonaktif.")
 	end
 
 	----------------------------------------------------------------- AUTO ACCEPT TRADE
@@ -6413,7 +6413,7 @@ return function(ctx)
 		local q = (syn and syn.queue_on_teleport) or queue_on_teleport
 			or (fluxus and fluxus.queue_on_teleport) or (getgenv and getgenv().queue_on_teleport)
 		if q then
-			local cmd = ('if getgenv then getgenv().GAG_BRANCH=%q end loadstring(game:HttpGet("https://raw.githubusercontent.com/caturambis-hash/agakgila/%s/apainicok/init.lua"))()'):format(branch, branch)
+			local cmd = ('if getgenv then getgenv().GAG_BRANCH=%q end loadstring(game:HttpGet("https://raw.githubusercontent.com/Tirta71/ScriptMarketGAG/%s/GAGSeller/init.lua"))()'):format(branch, branch)
 			pcall(function() q(cmd) end)
 		end
 	end
@@ -10886,7 +10886,7 @@ return function(ctx)
 							embeds = {
 								{
 									title = "Webhook Connection Test",
-									description = "Koneksi Discord Webhook berhasil tersambung dengan Allegiaan Garden!",
+									description = "Koneksi Discord Webhook berhasil tersambung dengan CeszParadise Garden!",
 									color = 3066993, -- Green
 									fields = {
 										{
@@ -10933,19 +10933,19 @@ return function(ctx)
 end
 ]=],
 	["ui/theme.lua"] = [=[
---[[ theme.lua — palet + helper Instance (garden, aksen kuning ala referensi). ]]
+--[[ theme.lua — palet + helper Instance (garden, dominasi pink lucu & elegan). ]]
 return function(ctx)
 	local C = {
-		bg      = Color3.fromRGB(20, 22, 28),
-		panel   = Color3.fromRGB(14, 16, 20),
-		row     = Color3.fromRGB(26, 29, 36),
-		rowAlt  = Color3.fromRGB(22, 25, 31),
-		stroke  = Color3.fromRGB(40, 44, 54),
-		acc     = Color3.fromRGB(245, 200, 45),   -- kuning
-		txt     = Color3.fromRGB(238, 240, 245),
-		sub     = Color3.fromRGB(140, 146, 158),
-		green   = Color3.fromRGB(90, 200, 120),
-		red     = Color3.fromRGB(220, 80, 80),
+		bg      = Color3.fromRGB(42, 27, 42),    -- ungu-pink gelap
+		panel   = Color3.fromRGB(61, 42, 61),    -- panel sedikit terang
+		row     = Color3.fromRGB(79, 58, 79),    -- kartu/baris utama
+		rowAlt  = Color3.fromRGB(69, 51, 69),    -- alternatif
+		stroke  = Color3.fromRGB(106, 74, 106),  -- garis batas pink keabu-abuan
+		acc     = Color3.fromRGB(255, 107, 157), -- pink cerah (aksen)
+		txt     = Color3.fromRGB(245, 230, 245), -- putih dengan sedikit pink
+		sub     = Color3.fromRGB(201, 166, 201), -- abu-pink halus
+		green   = Color3.fromRGB(123, 204, 158), -- hijau mint
+		red     = Color3.fromRGB(229, 115, 115), -- merah lembut
 	}
 
 	local function mk(cls, props, parent)
@@ -10960,8 +10960,7 @@ return function(ctx)
 	end
 
 	ctx.C = C; ctx.mk = mk; ctx.corner = corner; ctx.stroke = stroke; ctx.pad = pad
-end
-]=],
+end]=],
 	["ui/window.lua"] = [=[
 --[[ window.lua — jendela utama garden: sidebar 8 tab, player card, status, log. ]]
 return function(ctx)
@@ -10976,7 +10975,7 @@ return function(ctx)
 
 	pcall(function()
 		local host = (gethui and gethui()) or game:GetService("CoreGui")
-		for _, nm in ipairs({ "GAGGarden", "AllegiaanGarden" }) do
+		for _, nm in ipairs({ "GAGGarden", "CeszParadiseGarden" }) do
 			local old = host:FindFirstChild(nm); if old then old:Destroy() end
 			local pg = LP:FindFirstChild("PlayerGui")
 			if pg and pg:FindFirstChild(nm) then pg[nm]:Destroy() end
@@ -11027,7 +11026,7 @@ return function(ctx)
 
 	-- title bar
 	local titleBar = mk("Frame", { Size = UDim2.new(1, 0, 0, 44), BackgroundTransparency = 1 }, main)
-	mk("TextLabel", { Size = UDim2.new(1, -90, 1, 0), Position = UDim2.fromOffset(16, 0), BackgroundTransparency = 1, Text = "CeszParadiseHub VIP | Grow a Garden", Font = Enum.Font.GothamBold, TextSize = 15, TextColor3 = C.acc, TextXAlignment = Enum.TextXAlignment.Left }, titleBar)
+	mk("TextLabel", { Size = UDim2.new(1, -90, 1, 0), Position = UDim2.fromOffset(16, 0), BackgroundTransparency = 1, Text = "CeszParadiseHub | Grow a Garden", Font = Enum.Font.GothamBold, TextSize = 15, TextColor3 = C.acc, TextXAlignment = Enum.TextXAlignment.Left }, titleBar)
 	do
 		local dragging, ds, sp
 		titleBar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then dragging = true; ds = i.Position; sp = main.Position end end)
