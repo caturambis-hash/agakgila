@@ -16,7 +16,7 @@ return function(ctx)
 		local q = (syn and syn.queue_on_teleport) or queue_on_teleport
 			or (fluxus and fluxus.queue_on_teleport) or (getgenv and getgenv().queue_on_teleport)
 		if q then
-			local cmd = ('if getgenv then getgenv().GAG_BRANCH=%q end loadstring(game:HttpGet("https://raw.githubusercontent.com/Tirta71/ScriptMarketGAG/%s/GAGSeller/init.lua"))()'):format(branch, branch)
+			local cmd = ('if getgenv then getgenv().GAG_BRANCH=%q end loadstring(game:HttpGet("https://raw.githubusercontent.com/caturambis-hash/agakgila/%s/apainicok/init.lua"))()'):format(branch, branch)
 			pcall(function() q(cmd) end)
 		end
 	end
