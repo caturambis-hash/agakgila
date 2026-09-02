@@ -28,7 +28,7 @@ return function(ctx)
 		local title = Instance.new("TextLabel")
 		title.BackgroundTransparency = 1; title.Size = UDim2.new(1, -14, 0, 18)
 		title.Font = Enum.Font.GothamBold; title.TextSize = 14; title.TextXAlignment = Enum.TextXAlignment.Left
-		title.RichText = true; title.Text = 'AllegiaantHub <font color="#f6c518">Notification</font>'
+		title.RichText = true; title.Text = 'CeszParadiseHub <font color="#f6c518">Notification</font>'
 		title.TextColor3 = C.txt or Color3.fromRGB(235, 238, 242); title.Parent = f
 		local body = Instance.new("TextLabel")
 		body.BackgroundTransparency = 1; body.Size = UDim2.new(1, -14, 0, 16); body.Position = UDim2.fromOffset(0, 24)
@@ -55,7 +55,7 @@ return function(ctx)
 	end
 	selectTab("Inventory")
 
-	ctx.log("AllegiaantHub Garden dimuat.")
+	ctx.log("CeszParadiseHub Garden dimuat.")
 	ctx.setStatus("idle")
 
 	-- Anti-AFK: reset timer idle Roblox (kick ~20 menit) tiap Idled fire, via VirtualUser.
@@ -503,8 +503,8 @@ return function(ctx)
 		webhookEnabled = false,
 	}
 
-	-- Semua data hub disimpan di folder AllegiaantHUB/ (biar rapih, ga berserakan di root).
-	local FOLDER = "AllegiaantHUB"
+	-- Semua data hub disimpan di folder CeszParadiseHUB/ (biar rapih, ga berserakan di root).
+	local FOLDER = "CeszParadiseHUB"
 	local STATE_FILE = FOLDER .. "/garden_state.json"
 	-- lokasi lama (buat migrasi otomatis, urut dari yg paling baru)
 	local OLD_FILES = { "AllegiaanHUB/garden_state.json", "AllegiaanHub_garden_state.json" }
@@ -933,9 +933,9 @@ local function sendWebhook(url, payload, ctx)
 	local cleanUrl = url:match("^%s*(.-)%s*$")
 	if not cleanUrl or cleanUrl == "" then return end
 
-	-- Nama & avatar pengirim webhook (override default). Semua notif tampil "AllegiaantHub".
+	-- Nama & avatar pengirim webhook (override default). Semua notif tampil "CeszParadiseHub".
 	if type(payload) == "table" then
-		if not payload.username then payload.username = "AllegiaantHub" end
+		if not payload.username then payload.username = "CeszParadiseHub" end
 		if not payload.avatar_url then payload.avatar_url = "https://i.pinimg.com/736x/52/0e/d5/520ed52b650b318e20e9460eca77ced8.jpg" end
 	end
 	
@@ -1687,7 +1687,7 @@ end
 local HttpService = game:GetService("HttpService")
 local elephantWebhook = {}
 
-local USERNAME = "AllegiaantHub"
+local USERNAME = "CeszParadiseHub"
 local AVATAR = "https://i.pinimg.com/736x/52/0e/d5/520ed52b650b318e20e9460eca77ced8.jpg"
 
 local function bracketLabel(w)
@@ -4736,7 +4736,7 @@ return function(ctx)
 		local payload = {
 			content = "@everyone",
 			embeds = { {
-				title = "AllegiaantHub \u{2014} Hatch Alerts",
+				title = "CeszParadiseHub \u{2014} Hatch Alerts",
 				color = 5814783,
 				fields = {
 					{ name = "Profile :", value = ("> Username : ||%s||"):format(LP.Name), inline = false },
@@ -5218,7 +5218,7 @@ return function(ctx)
 			end
 		end)
 	else
-		warn("[AllegiaantHub] GiftPet/AcceptPetGift remote tidak ketemu — auto accept gift nonaktif.")
+		warn("[CeszParadiseHub] GiftPet/AcceptPetGift remote tidak ketemu — auto accept gift nonaktif.")
 	end
 
 	----------------------------------------------------------------- AUTO ACCEPT TRADE
@@ -11027,7 +11027,7 @@ return function(ctx)
 
 	-- title bar
 	local titleBar = mk("Frame", { Size = UDim2.new(1, 0, 0, 44), BackgroundTransparency = 1 }, main)
-	mk("TextLabel", { Size = UDim2.new(1, -90, 1, 0), Position = UDim2.fromOffset(16, 0), BackgroundTransparency = 1, Text = "AllegiaantHub VIP | Grow a Garden", Font = Enum.Font.GothamBold, TextSize = 15, TextColor3 = C.acc, TextXAlignment = Enum.TextXAlignment.Left }, titleBar)
+	mk("TextLabel", { Size = UDim2.new(1, -90, 1, 0), Position = UDim2.fromOffset(16, 0), BackgroundTransparency = 1, Text = "CeszParadiseHub VIP | Grow a Garden", Font = Enum.Font.GothamBold, TextSize = 15, TextColor3 = C.acc, TextXAlignment = Enum.TextXAlignment.Left }, titleBar)
 	do
 		local dragging, ds, sp
 		titleBar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then dragging = true; ds = i.Position; sp = main.Position end end)
@@ -11054,7 +11054,7 @@ return function(ctx)
 		local overlay = mk("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.45, BorderSizePixel = 0, ZIndex = 50, Active = true }, main)
 		local box = mk("Frame", { Size = UDim2.fromOffset(300, 150), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = C.panel, BorderSizePixel = 0, ZIndex = 51 }, overlay)
 		corner(box, 12); stroke(box, C.stroke, 1)
-		mk("TextLabel", { Size = UDim2.new(1, -24, 0, 36), Position = UDim2.fromOffset(12, 16), BackgroundTransparency = 1, Text = "Close AllegiaantHub?", Font = Enum.Font.GothamBold, TextSize = 16, TextColor3 = C.acc, ZIndex = 51 }, box)
+		mk("TextLabel", { Size = UDim2.new(1, -24, 0, 36), Position = UDim2.fromOffset(12, 16), BackgroundTransparency = 1, Text = "Close CeszParadiseHub?", Font = Enum.Font.GothamBold, TextSize = 16, TextColor3 = C.acc, ZIndex = 51 }, box)
 		mk("TextLabel", { Size = UDim2.new(1, -24, 0, 24), Position = UDim2.fromOffset(12, 52), BackgroundTransparency = 1, Text = "Yakin mau nutup hub ini?", Font = Enum.Font.Gotham, TextSize = 13, TextColor3 = C.txt, ZIndex = 51 }, box)
 		local noBtn = mk("TextButton", { Size = UDim2.fromOffset(120, 38), Position = UDim2.new(0, 18, 1, -50), BackgroundColor3 = C.row, Text = "No", Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = C.txt, ZIndex = 51 }, box)
 		corner(noBtn, 8)
