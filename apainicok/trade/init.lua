@@ -2,7 +2,7 @@
 	GAG Seller — Trade World (Grow a Garden)  [Refactored / Modular]
 	App TRADE WORLD. Biasanya tidak dijalankan langsung — dipanggil oleh router
 	GAGSeller/init.lua saat PlaceId == Trade World. Bisa juga dijalankan manual:
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/Tirta71/ScriptMarketGAG/main/GAGSeller/trade/init.lua"))()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/caturambis-hash/agakgila/trade/init.lua"))()
 
 	init.lua bertugas:
 	  1. Membangun satu tabel `ctx` yang dibagi ke semua modul.
@@ -18,7 +18,7 @@
 -- Base URL raw GitHub tempat semua modul berada. Branch bisa di-override buat dev:
 --   getgenv().GAG_BRANCH = "dev"  (default "main" = production)
 local branch = (getgenv and getgenv().GAG_BRANCH) or _G.GAG_BRANCH or "main"
-local BASE = "https://raw.githubusercontent.com/Tirta71/ScriptMarketGAG/" .. branch .. "/GAGSeller/trade"
+local BASE = "https://raw.githubusercontent.com/caturambis-hash/agakgila/" .. branch .. "/apainicok/trade"
 
 --------------------------------------------------------------------- loader
 -- Selalu load dari bundle.lua (1 HttpGet, kilat). Workflow: edit modul ->
@@ -95,10 +95,10 @@ function ctx.getLogo()
 	pcall(function()
 		local gca = getcustomasset or getsynasset or (syn and syn.getcustomasset)
 		if not (gca and writefile) then return end
-		local path = "AllegiaantHUB/logo_icon.png"
+		local path = "CeszParadiseHUB/logo_icon.png"
 		if not (isfile and isfile(path)) then
-			if makefolder and not (isfolder and isfolder("AllegiaantHUB")) then makefolder("AllegiaantHUB") end
-			writefile(path, game:HttpGet("https://raw.githubusercontent.com/Tirta71/ScriptMarketGAG/" .. branch .. "/GAGSeller/Logo/logo_icon.png"))
+			if makefolder and not (isfolder and isfolder("CeszParadiseHUB")) then makefolder("CeszParadiseHUB") end
+			writefile(path, game:HttpGet("https://raw.githubusercontent.com/caturambis-hash/agakgila/" .. branch .. "/apainicok/Logo/logo_icon.png"))
 		end
 		asset = gca(path) or false
 	end)
