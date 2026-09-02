@@ -1,11 +1,11 @@
 --[[
-	AllegiaantHub — GARDEN app (loader)
+	CeszParadiseHub — GARDEN app (loader)
 	Dipanggil router GAGSeller/init.lua saat berada di server Garden.
 	Pola sama seperti trade/: tiap modul `return function(ctx)`, berbagi tabel ctx.
 --]]
 
 local branch = (getgenv and getgenv().GAG_BRANCH) or _G.GAG_BRANCH or "main"
-local BASE = "https://raw.githubusercontent.com/Tirta71/ScriptMarketGAG/" .. branch .. "/GAGSeller/garden"
+local BASE = "https://raw.githubusercontent.com/caturambis-hash/agakgila/" .. branch .. "/apainicok/garden"
 
 -- Selalu load dari bundle.lua (1 HttpGet, kilat). Workflow: edit modul ->
 -- `node tools/bundle.js` -> push. Kalau bundle gagal / ada modul yg belum
@@ -34,15 +34,15 @@ end
 local function loadModule(relPath)
 	local src = fetch(relPath)
 	if type(src) ~= "string" or src == "" then
-		error(("[AllegiaantHub/garden] gagal ambil %s"):format(relPath))
+		error(("[CeszParadiseHub/garden] gagal ambil %s"):format(relPath))
 	end
 	local chunk, err = loadstring(src, "@" .. relPath)
 	if not chunk then
-		error(("[AllegiaantHub/garden] gagal compile %s: %s"):format(relPath, tostring(err)))
+		error(("[CeszParadiseHub/garden] gagal compile %s: %s"):format(relPath, tostring(err)))
 	end
 	local mod = chunk()
 	if type(mod) ~= "function" then
-		error(("[AllegiaantHub/garden] modul %s harus 'return function(ctx)'"):format(relPath))
+		error(("[CeszParadiseHub/garden] modul %s harus 'return function(ctx)'"):format(relPath))
 	end
 	return mod
 end
@@ -80,10 +80,10 @@ function ctx.getLogo()
 	pcall(function()
 		local gca = getcustomasset or getsynasset or (syn and syn.getcustomasset)
 		if not (gca and writefile) then return end
-		local path = "AllegiaantHUB/logo_icon.png"
+		local path = "CeszParadiseHUB/logo_icon.png"
 		if not (isfile and isfile(path)) then
-			if makefolder and not (isfolder and isfolder("AllegiaantHUB")) then makefolder("AllegiaantHUB") end
-			writefile(path, game:HttpGet("https://raw.githubusercontent.com/Tirta71/ScriptMarketGAG/" .. branch .. "/GAGSeller/Logo/logo_icon.png"))
+			if makefolder and not (isfolder and isfolder("CeszParadiseHUB")) then makefolder("CeszParadiseHUB") end
+			writefile(path, game:HttpGet("https://raw.githubusercontent.com/caturambis-hash/agakgila/" .. branch .. "/apainicok/Logo/logo_icon.png"))
 		end
 		asset = gca(path) or false
 	end)
