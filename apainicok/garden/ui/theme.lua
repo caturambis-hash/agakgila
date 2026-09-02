@@ -1,17 +1,18 @@
---[[ theme.lua — palet + helper Instance (garden, aksen kuning ala referensi). ]]
+--[[ theme.lua — palet + helper Instance (garden, dominasi pink). ]]
 return function(ctx)
 	local C = {
-		bg      = Color3.fromRGB(20, 22, 28),
-		panel   = Color3.fromRGB(14, 16, 20),
-		row     = Color3.fromRGB(26, 29, 36),
-		rowAlt  = Color3.fromRGB(22, 25, 31),
-		stroke  = Color3.fromRGB(40, 44, 54),
-		acc     = Color3.fromRGB(245, 200, 45),   -- kuning
-		txt     = Color3.fromRGB(238, 240, 245),
-		sub     = Color3.fromRGB(140, 146, 158),
-		green   = Color3.fromRGB(90, 200, 120),
-		red     = Color3.fromRGB(220, 80, 80),
+		bg      = Color3.fromRGB(26, 15, 26),    -- sangat gelap keunguan
+		panel   = Color3.fromRGB(35, 22, 35),    -- panel lebih terang
+		row     = Color3.fromRGB(46, 30, 46),    -- kartu / baris
+		rowAlt  = Color3.fromRGB(40, 26, 40),
+		stroke  = Color3.fromRGB(70, 50, 70),    -- garis pembatas pink gelap
+		acc     = Color3.fromRGB(255, 105, 180), -- hot pink (aksen utama)
+		txt     = Color3.fromRGB(245, 235, 245), -- putih dengan sedikit pink
+		sub     = Color3.fromRGB(190, 160, 190), -- abu pink
+		green   = Color3.fromRGB(90, 200, 120),  -- tetap hijau
+		red     = Color3.fromRGB(220, 80, 80),   -- tetap merah
 	}
+
 
 	local function mk(cls, props, parent)
 		local o = Instance.new(cls); for k, v in pairs(props) do o[k] = v end; o.Parent = parent; return o
