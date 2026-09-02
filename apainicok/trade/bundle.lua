@@ -1,6 +1,6 @@
 -- AUTO-GENERATED oleh tools/bundle.js — JANGAN edit manual.
 -- Edit modul-nya langsung, terus run `node tools/bundle.js`.
--- 14 modul, di-generate 2026-08-30T03:26:50.703Z
+-- 14 modul, di-generate 2026-09-02T09:04:00.491Z
 return {
 	["app.lua"] = [=[
 --[[ app.lua — inisialisasi akhir: default page, supervisor auto-claim, auto-resume. ]]
@@ -17,7 +17,7 @@ return function(ctx)
 	tabBtns["Sell"].btn.TextColor3 = C.txt
 	tabBtns["Sell"].line.Visible = true
 
-	log("CeszParadiseHub GAG Seller v1.2.5 dimuat.")
+	log("CeszParadise GAG Seller v1.2.5 dimuat.")
 	pcall(function()
 		local Players = ctx.Services.Players or game:GetService("Players")
 		log(("Masuk server: %d/%d pemain."):format(#Players:GetPlayers(), Players.MaxPlayers))
@@ -46,7 +46,7 @@ return function(ctx)
 		local GuiService = game:GetService("GuiService")
 		local TeleportService = game:GetService("TeleportService")
 		local branch = (getgenv and getgenv().GAG_BRANCH) or "main"
-		local RECON = ("getgenv().GAG_BRANCH='%s';loadstring(game:HttpGet('https://raw.githubusercontent.com/caturambis-hash/agakgila//%s/apainicok/init.lua'))()"):format(branch, branch)
+		local RECON = ("getgenv().GAG_BRANCH='%s';loadstring(game:HttpGet('https://raw.githubusercontent.com/caturambis-hash/agakgila/%s/apainicok/init.lua'))()"):format(branch, branch)
 		local reconnecting = false
 		local function reconnect()
 			if reconnecting or CFG.autoReconnect == false then return end -- cek toggle real-time
@@ -240,7 +240,7 @@ return function(ctx)
 		local summary, total = buildSnipeSummary()
 		local tok = getTokens(); tok = (tok == math.huge) and "?" or tostring(tok)
 		ctx.sendWebhook({
-			username = "CeszParadiseHub GAG Sniper",
+			username = "CeszParadise GAG Sniper",
 			embeds = {{
 				title = "✅ Pet Sniped!",
 				color = 3066993,
@@ -268,7 +268,7 @@ return function(ctx)
 	end
 
 	------------------------------------------------------------------ server hop (cari seller)
-	local HUB_FOLDER = "CeszParadiseHUB"
+	local HUB_FOLDER = "AllegiaantHUB"
 	local function ensureHubFolder()
 		if type(makefolder) == "function" and (type(isfolder) ~= "function" or not isfolder(HUB_FOLDER)) then
 			pcall(function() makefolder(HUB_FOLDER) end)
@@ -375,7 +375,7 @@ return function(ctx)
 			local req = (syn and syn.request) or (http and http.request) or http_request or request
 			if not req then return end
 			req({
-				Url = "https://api.CeszParadise.my.id/api/agent/suppress",
+				Url = "https://api.allegiaant.my.id/api/agent/suppress",
 				Method = "POST",
 				Headers = { ["Content-Type"] = "application/json", ["x-api-key"] = "ae3858d4a2def3306d6cbff26ff2bd72eee9319b1aae27d1" },
 				Body = game:GetService("HttpService"):JSONEncode({
@@ -661,8 +661,8 @@ return function(ctx)
 		end
 	end
 
-	-- Semua data hub disimpan di folder CeszParadiseHUB/ (biar rapih, ga berserakan di root).
-	local FOLDER = "CeszParadiseHUB"
+	-- Semua data hub disimpan di folder AllegiaantHUB/ (biar rapih, ga berserakan di root).
+	local FOLDER = "AllegiaantHUB"
 	local STATE_FILE = FOLDER .. "/trade_state.json"
 	-- lokasi lama (buat migrasi otomatis, urut dari yg paling baru)
 	local OLD_FILES = { "AllegiaanHUB/trade_state.json", "GAGSeller_state.json" }
@@ -942,7 +942,7 @@ return function(ctx)
 
 	----------------------------------------------------------------- history ke dashboard
 	-- Kirim transaksi (buy/sell) ke Laravel buat History tab. Non-blocking, best-effort.
-	local EVENT_URL = "https://api.CeszParadise.my.id/api/event"
+	local EVENT_URL = "https://api.allegiaant.my.id/api/event"
 	local EVENT_KEY = "ae3858d4a2def3306d6cbff26ff2bd72eee9319b1aae27d1"
 	local function reportEvent(kind, data)
 		task.spawn(function()
@@ -1065,12 +1065,12 @@ return function(ctx)
 					}
 				},
 				footer = {
-					text = ("CeszParadise GAG Trade • %s"):format(os.date("%d/%m/%y, %H.%M"))
+					text = ("Allegiaant GAG Trade • %s"):format(os.date("%d/%m/%y, %H.%M"))
 				}
 			}
 
 			sendWebhook({
-				username = "CeszParadiseHub GAG Seller",
+				username = "AllegiaantHub GAG Seller",
 				embeds = { embed }
 			})
 
@@ -1087,7 +1087,7 @@ return function(ctx)
 end
 ]=],
 	["modules/core/websync.lua"] = [=[
---[[ websync.lua — sinkron opsi/config trade ke dashboard web (CeszParadiseHUB Monitor).
+--[[ websync.lua — sinkron opsi/config trade ke dashboard web (AllegiaantHUB Monitor).
 
      STEP 1: push OPTIONS (pet/mutasi/skin) -> dropdown web sama persis in-game.
      STEP 2: sync CONFIG DUA ARAH per-akun:
@@ -1097,7 +1097,7 @@ end
 
      Semua HTTP di THREAD TERPISAH + pcall = non-blocking, ga ganggu automation. ]]
 return function(ctx)
-	local WEB_BASE = "https://api.CeszParadise.my.id"
+	local WEB_BASE = "https://api.allegiaant.my.id"
 	local API_KEY  = "ae3858d4a2def3306d6cbff26ff2bd72eee9319b1aae27d1"
 	local POLL_EVERY = 10  -- detik (hemat invocation Vercel; config/command telat max ~10s)
 
@@ -2802,7 +2802,7 @@ return function(ctx)
 	corner(titleBar, 10)
 	mk("TextLabel", {
 		Size = UDim2.new(1, -80, 1, 0), Position = UDim2.fromOffset(14, 0), BackgroundTransparency = 1,
-		Text = "CeszParadiseHub | GAG Trade", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = C.acc,
+		Text = "CeszParadise | GAG Trade", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = C.acc,
 		TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 2,
 	}, titleBar)
 	do
