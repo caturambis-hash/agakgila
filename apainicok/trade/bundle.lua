@@ -665,7 +665,7 @@ return function(ctx)
 	local FOLDER = "AllegiaantHUB"
 	local STATE_FILE = FOLDER .. "/trade_state.json"
 	-- lokasi lama (buat migrasi otomatis, urut dari yg paling baru)
-	local OLD_FILES = { "AllegiaanHUB/trade_state.json", "GAGSeller_state.json" }
+	local OLD_FILES = { "CeszParadiseHUB/trade_state.json", "apainicok_state.json" }
 
 	local function ensureFolder()
 		if type(makefolder) == "function" and (type(isfolder) ~= "function" or not isfolder(FOLDER)) then
@@ -2735,13 +2735,13 @@ return function(ctx)
 	----------------------------------------------------------------- bersihkan GUI lama
 	pcall(function()
 		local host = (gethui and gethui()) or game:GetService("CoreGui")
-		local old = host:FindFirstChild("GAGSeller"); if old then old:Destroy() end
+		local old = host:FindFirstChild("apainicok"); if old then old:Destroy() end
 		local pg = LP:FindFirstChild("PlayerGui")
-		if pg and pg:FindFirstChild("GAGSeller") then pg.GAGSeller:Destroy() end
+		if pg and pg:FindFirstChild("apainicok") then pg.apainicok:Destroy() end
 	end)
 
 	local gui = Instance.new("ScreenGui")
-	gui.Name = "GAGSeller"; gui.ResetOnSpawn = false; gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	gui.Name = "apainicok"; gui.ResetOnSpawn = false; gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	gui.Parent = LP:WaitForChild("PlayerGui")
 	ctx.state.gui = gui
 	ctx.state.isAlive = true
