@@ -1,6 +1,6 @@
 -- AUTO-GENERATED oleh tools/bundle.js — JANGAN edit manual.
 -- Edit modul-nya langsung, terus run `node tools/bundle.js`.
--- 14 modul, di-generate 2026-09-04T00:51:19.210Z
+-- 14 modul, di-generate 2026-09-04T00:21:25.144Z
 return {
 	["app.lua"] = [=[
 --[[ app.lua — inisialisasi akhir: default page, supervisor auto-claim, auto-resume. ]]
@@ -2029,50 +2029,39 @@ return function(ctx)
 end
 ]=],
 	["ui/components.lua"] = [=[
-﻿--[[ components.lua — kontrol UI reusable PINK ELEGAN.
+--[[ components.lua — kontrol UI reusable.
      Mengisi: ctx.makeToggle, ctx.makeInput, ctx.makeDropdown,
-               ctx.makeSingleDropdown, ctx.makeButton, ctx.makeAccordion, ctx.makePage
-     Fitur baru: tw() helper, toggle pill 44x22, accordion dengan accentBar,
-                 tab dengan pill background gradient. ]]
+              ctx.makeSingleDropdown, ctx.makeButton, ctx.makeAccordion, ctx.makePage
+     Catatan: makePage membaca ctx.ui.tabButtonsFrame/content/pages/tabBtns saat
+     dipanggil (dibuat oleh window.lua), jadi urutan load tetap aman. ]]
 return function(ctx)
 	local C      = ctx.C
 	local mk     = ctx.mk
 	local corner = ctx.corner
 	local stroke = ctx.stroke
 	local pad    = ctx.pad
-	local grad   = ctx.grad
-	local TS     = game:GetService("TweenService")
 
-	-- tw(): shorthand TweenService:Create(...):Play()
-	local function tw(obj, t, props)
-		TS:Create(obj, TweenInfo.new(t or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), props):Play()
-	end
-
-	----------------------------------------------------------------- toggle (pill 44x22 dengan gradient on-state)
+	----------------------------------------------------------------- toggle
 	local function makeToggle(parent, title, desc, getv, setv, order)
 		local row = mk("Frame", { Size = UDim2.new(1, 0, 0, 48), BackgroundTransparency = 1, LayoutOrder = order }, parent)
-		local txts = mk("Frame", { Size = UDim2.new(1, -58, 1, 0), BackgroundTransparency = 1 }, row)
+		local txts = mk("Frame", { Size = UDim2.new(1, -50, 1, 0), BackgroundTransparency = 1 }, row)
 		mk("TextLabel", { Size = UDim2.new(1, 0, 0, 20), Position = UDim2.fromOffset(0, 4), BackgroundTransparency = 1, Text = title, Font = Enum.Font.GothamMedium, TextSize = 13, TextColor3 = C.txt, TextXAlignment = Enum.TextXAlignment.Left }, txts)
 		mk("TextLabel", { Size = UDim2.new(1, 0, 0, 16), Position = UDim2.fromOffset(0, 22), BackgroundTransparency = 1, Text = desc or "", Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = C.sub, TextXAlignment = Enum.TextXAlignment.Left }, txts)
 
-		-- pill 44x22
-		local pill = mk("TextButton", { Size = UDim2.fromOffset(44, 22), Position = UDim2.new(1, -48, 0.5, -11), BackgroundColor3 = C.panel, Text = "", AutoButtonColor = false }, row)
-		corner(pill, 11); stroke(pill, C.stroke, 1, 0.3)
-		-- gradient overlay (visible when ON)
-		local pillGrad = mk("Frame", { Size = UDim2.new(1,0,1,0), BackgroundColor3 = C.acc, BackgroundTransparency = 1, BorderSizePixel = 0 }, pill)
-		corner(pillGrad, 11)
-		grad(pillGrad, 0)
-		local dot = mk("Frame", { Size = UDim2.fromOffset(16, 16), Position = UDim2.fromOffset(3, 3), BackgroundColor3 = C.sub }, pill)
-		corner(dot, 8)
+		local knob = mk("TextButton", { Size = UDim2.fromOffset(36, 18), Position = UDim2.new(1, -38, 0.5, -9), BackgroundColor3 = C.panel, Text = "", AutoButtonColor = false }, row)
+		corner(knob, 9); stroke(knob, C.stroke)
+		local dot = mk("Frame", { Size = UDim2.fromOffset(12, 12), Position = UDim2.fromOffset(3, 3), BackgroundColor3 = C.sub }, knob)
+		corner(dot, 6)
 
 		local function render()
 			local on = getv()
-			dot:TweenPosition(on and UDim2.fromOffset(25, 3) or UDim2.fromOffset(3, 3), "Out", "Quad", 0.15, true)
-			tw(pillGrad, 0.15, { BackgroundTransparency = on and 0 or 1 })
-			tw(dot, 0.15, { BackgroundColor3 = on and Color3.new(1,1,1) or C.sub })
+			dot:TweenPosition(on and UDim2.fromOffset(21, 3) or UDim2.fromOffset(3, 3), "Out", "Quad", 0.15, true)
+			knob.BackgroundColor3 = on and C.acc or C.panel
+			dot.BackgroundColor3 = on and Color3.new(1, 1, 1) or C.sub
 		end
-		pill.MouseButton1Click:Connect(function() setv(not getv()); render() end)
+		knob.MouseButton1Click:Connect(function() setv(not getv()); render() end)
 		render()
+		-- daftar render buat re-sync tampilan toggle kalau CFG diubah dari luar (mis. web sync)
 		ctx.state.toggleRenders = ctx.state.toggleRenders or {}
 		table.insert(ctx.state.toggleRenders, render)
 		return render
@@ -2087,8 +2076,9 @@ return function(ctx)
 
 		local box = mk("TextBox", { Size = UDim2.fromOffset(110, 26), Position = UDim2.new(1, -112, 0.5, -13), BackgroundColor3 = C.panel, Text = tostring(getv()), Font = Enum.Font.GothamMedium, TextSize = 12, TextColor3 = C.acc, ClearTextOnFocus = false }, row)
 		corner(box, 6); local bs = stroke(box)
-		box.Focused:Connect(function() tw(bs, 0.15, { Color = C.acc, Transparency = 0 }) end)
-		box.FocusLost:Connect(function() tw(bs, 0.15, { Color = C.stroke, Transparency = 0.5 }); setv(box.Text); box.Text = tostring(getv()) end)
+		box.Focused:Connect(function() game:GetService("TweenService"):Create(bs, TweenInfo.new(0.15), { Color = C.acc }):Play() end)
+		box.FocusLost:Connect(function() game:GetService("TweenService"):Create(bs, TweenInfo.new(0.15), { Color = C.stroke }):Play(); setv(box.Text); box.Text = tostring(getv()) end)
+		-- daftar refresh biar tampilan angka ikut update kalau CFG diubah dari luar (web sync)
 		ctx.state.uiRefreshers = ctx.state.uiRefreshers or {}
 		table.insert(ctx.state.uiRefreshers, function() box.Text = tostring(getv()) end)
 		return box
@@ -2127,7 +2117,8 @@ return function(ctx)
 
 		local built = false
 		local optBtns = {}
-		local rends = {}
+		local rends = {} -- render checkmark tiap opsi (buat refresh dari luar, mis. Clear All)
+		-- Selected-first: yang dipilih (✓) di paling atas.
 		local function reorder()
 			local i = 0
 			for _, opt in ipairs(options) do
@@ -2144,7 +2135,7 @@ return function(ctx)
 				local ob = mk("TextButton", { Size = UDim2.new(1, 0, 0, 24), BackgroundColor3 = C.row, Text = "  " .. opt, TextXAlignment = Enum.TextXAlignment.Left, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = C.txt, AutoButtonColor = false }, scroll)
 				corner(ob, 4)
 				local check = mk("TextLabel", { Size = UDim2.fromOffset(20, 24), Position = UDim2.new(1, -22, 0, 0), BackgroundTransparency = 1, Text = "", Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = C.green }, ob)
-				local function rend() check.Text = selSet[opt] and "\u2713" or ""; ob.BackgroundColor3 = selSet[opt] and C.acc:Lerp(C.panel, 0.7) or C.row end
+				local function rend() check.Text = selSet[opt] and "✓" or ""; ob.BackgroundColor3 = selSet[opt] and Color3.fromRGB(40, 44, 60) or C.row end
 				ob.MouseButton1Click:Connect(function()
 					if selSet[opt] then selSet[opt] = nil else selSet[opt] = true end
 					rend(); updateSummary(); reorder(); if onChange then onChange() end
@@ -2166,11 +2157,14 @@ return function(ctx)
 			if listFrame.Visible then reorder() end
 		end)
 		updateSummary()
+		-- refresh: sinkronin tampilan (checkmark + summary) dengan isi selSet terkini.
+		-- Dipakai Clear All: setelah selSet dikosongkan, panggil ini biar centang ilang.
 		local function refresh()
 			for _, r in ipairs(rends) do r() end
 			updateSummary()
 			if built then reorder() end
 		end
+		-- daftar refresh biar centang/summary ikut update kalau selSet diubah dari luar (web sync)
 		ctx.state.uiRefreshers = ctx.state.uiRefreshers or {}
 		table.insert(ctx.state.uiRefreshers, refresh)
 		return refresh
@@ -2189,9 +2183,11 @@ return function(ctx)
 		local initialDisplay = getv()
 		for _, opt in ipairs(options) do
 			if type(opt) == "table" and opt.name == getv() then
-				initialDisplay = opt.display; break
+				initialDisplay = opt.display
+				break
 			elseif type(opt) == "string" and opt == getv() then
-				initialDisplay = opt; break
+				initialDisplay = opt
+				break
 			end
 		end
 
@@ -2228,68 +2224,70 @@ return function(ctx)
 		return head
 	end
 
-	----------------------------------------------------------------- button dengan gradient hover
+	----------------------------------------------------------------- button (minimal/elegant)
+	local TS = game:GetService("TweenService")
 	local function makeButton(parent, title, color, onClick, order)
 		local base = color or C.acc
 		local btn = mk("TextButton", { Size = UDim2.new(1, 0, 0, 32), BackgroundColor3 = base, Text = title, Font = Enum.Font.GothamMedium, TextSize = 12, TextColor3 = Color3.new(1, 1, 1), AutoButtonColor = false, LayoutOrder = order }, parent)
-		corner(btn, 6); stroke(btn, C.stroke, 1, 0.4)
-		-- gradient accent bar di bawah button
-		local bar = mk("Frame", { Size = UDim2.new(1, 0, 0, 2), Position = UDim2.new(0, 0, 1, -2), BackgroundColor3 = C.acc2, BorderSizePixel = 0 }, btn)
-		corner(bar, 3)
-		grad(bar, 0)
-		btn.MouseEnter:Connect(function() tw(btn, 0.15, { BackgroundColor3 = base:Lerp(Color3.new(1, 1, 1), 0.12) }) end)
-		btn.MouseLeave:Connect(function() tw(btn, 0.15, { BackgroundColor3 = base }) end)
+		corner(btn, 6); stroke(btn, C.stroke, 1)
+		btn.MouseEnter:Connect(function() TS:Create(btn, TweenInfo.new(0.15), { BackgroundColor3 = base:Lerp(Color3.new(1, 1, 1), 0.1) }):Play() end)
+		btn.MouseLeave:Connect(function() TS:Create(btn, TweenInfo.new(0.15), { BackgroundColor3 = base }):Play() end)
 		if onClick then btn.MouseButton1Click:Connect(onClick) end
 		return btn
 	end
 
-	----------------------------------------------------------------- accordion dengan accentBar kiri
+	----------------------------------------------------------------- accordion
 	local function makeAccordion(parent, title, order)
+		local TS = game:GetService("TweenService")
 		local container = mk("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundColor3 = C.row, BorderSizePixel = 0, LayoutOrder = order, ClipsDescendants = false }, parent)
 		corner(container, 8); stroke(container)
 		mk("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 0) }, container)
 
 		local head = mk("TextButton", { Size = UDim2.new(1, 0, 0, 44), BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Text = "", AutoButtonColor = false, LayoutOrder = 1 }, container)
 		corner(head, 8)
-		pad(head, 18, 12, 0, 0)
-
-		-- accent bar kiri (pink, 3px)
-		local accentBar = mk("Frame", { Size = UDim2.fromOffset(3, 20), Position = UDim2.new(0, 8, 0.5, -10), BackgroundColor3 = C.acc, BorderSizePixel = 0 }, head)
-		corner(accentBar, 2)
-		grad(accentBar, 90)
+		pad(head, 14, 12, 0, 0)
 
 		local lbl = mk("TextLabel", { Size = UDim2.new(1, -30, 1, 0), BackgroundTransparency = 1, Text = title, Font = Enum.Font.GothamMedium, TextSize = 13, TextColor3 = C.txt, TextXAlignment = Enum.TextXAlignment.Left }, head)
 		local arrow = mk("TextLabel", { Size = UDim2.fromOffset(12, 12), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(1, -6, 0.5, 0), BackgroundTransparency = 1, Text = "v", Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = C.sub, TextXAlignment = Enum.TextXAlignment.Center }, head)
 
-		local line = mk("Frame", { Size = UDim2.new(1, 0, 0, 1), BackgroundColor3 = C.acc, BackgroundTransparency = 0.6, BorderSizePixel = 0, LayoutOrder = 2, Visible = false }, container)
+		local line = mk("Frame", { Size = UDim2.new(1, 0, 0, 1), BackgroundColor3 = C.stroke, BorderSizePixel = 0, LayoutOrder = 2, Visible = false }, container)
 		local body = mk("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, Visible = false, LayoutOrder = 3 }, container)
 		pad(body, 12, 12, 8, 12)
 		mk("UIListLayout", { Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }, body)
 
-		head.MouseEnter:Connect(function() tw(head, 0.2, { BackgroundTransparency = 0.94 }) end)
-		head.MouseLeave:Connect(function() tw(head, 0.2, { BackgroundTransparency = 1 }) end)
+		head.MouseEnter:Connect(function()
+			TS:Create(head, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { BackgroundTransparency = 0.96 }):Play()
+		end)
+		head.MouseLeave:Connect(function()
+			TS:Create(head, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { BackgroundTransparency = 1 }):Play()
+		end)
 
+		-- setOpen: buka/tutup accordion (dipakai head click + navigasi dari luar).
 		local function setOpen(open)
 			body.Visible = open
 			line.Visible = open
-			tw(arrow, 0.25, { Rotation = open and 180 or 0 })
-			tw(arrow, 0.2, { TextColor3 = open and C.acc or C.sub })
-			tw(lbl, 0.2, { TextColor3 = open and C.acc or C.txt })
-			tw(accentBar, 0.2, { BackgroundTransparency = open and 0 or 0.5 })
+			local targetRotation = open and 180 or 0
+			TS:Create(arrow, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Rotation = targetRotation }):Play()
+			TS:Create(arrow, TweenInfo.new(0.2), { TextColor3 = open and C.acc or C.sub }):Play()
+			TS:Create(lbl, TweenInfo.new(0.2), { TextColor3 = open and C.acc or C.txt }):Play()
 		end
 
-		head.MouseButton1Click:Connect(function() setOpen(not body.Visible) end)
+		head.MouseButton1Click:Connect(function()
+			setOpen(not body.Visible)
+		end)
+		-- return: body (Frame) + setOpen (fn) + container (buat scroll-into-view).
 		return body, setOpen, container
 	end
 
-	----------------------------------------------------------------- page + tab (pill background)
+	----------------------------------------------------------------- page + tab
+	-- selectTab: aktifin tab `name` (dipakai tab click + navigasi dari Inventory).
 	local function selectTab(name)
 		local pages   = ctx.ui.pages
 		local tabBtns = ctx.ui.tabBtns
 		for n, p in pairs(pages) do p.Visible = (n == name) end
 		for n, b in pairs(tabBtns) do
 			local on = (n == name)
-			tw(b.pill, 0.18, { BackgroundTransparency = on and 0.82 or 1 })
+			TS:Create(b.btn, TweenInfo.new(0.18), { BackgroundTransparency = on and 0.86 or 1 }):Play()
 			b.btn.TextColor3 = on and C.txt or C.sub
 			b.line.Visible = on
 		end
@@ -2302,26 +2300,20 @@ return function(ctx)
 		local pages           = ctx.ui.pages
 		local tabBtns         = ctx.ui.tabBtns
 
-		-- pill background behind tab button
-		local pillFrame = mk("Frame", {
-			Size = UDim2.new(1, 0, 0, 36), BackgroundColor3 = C.acc, BackgroundTransparency = 1,
-			LayoutOrder = order,
-		}, tabButtonsFrame)
-		corner(pillFrame, 8)
-		grad(pillFrame, 0)
-
 		local btn = mk("TextButton", {
-			Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1,
+			Size = UDim2.new(1, 0, 0, 36), BackgroundColor3 = C.acc, BackgroundTransparency = 1,
 			Text = "     " .. iconLabel .. " | " .. name, Font = Enum.Font.GothamMedium, TextSize = 12, TextColor3 = C.sub,
-			AutoButtonColor = false, TextXAlignment = Enum.TextXAlignment.Left
-		}, pillFrame)
+			LayoutOrder = order, AutoButtonColor = false, TextXAlignment = Enum.TextXAlignment.Left
+		}, tabButtonsFrame)
+		corner(btn, 8)
 
-		local line = mk("Frame", { Size = UDim2.fromOffset(3, 18), Position = UDim2.new(0, 4, 0.5, -9), BackgroundColor3 = C.acc, Visible = false }, btn)
+		local line = mk("Frame", { Size = UDim2.new(0, 3, 0, 18), Position = UDim2.new(0, 4, 0.5, -9), BackgroundColor3 = C.acc, Visible = false }, btn)
 		corner(line, 2)
-		tabBtns[name] = { btn = btn, line = line, pill = pillFrame }
+		tabBtns[name] = { btn = btn, line = line }
 
-		btn.MouseEnter:Connect(function() if not line.Visible then tw(pillFrame, 0.18, { BackgroundTransparency = 0.94 }) end end)
-		btn.MouseLeave:Connect(function() if not line.Visible then tw(pillFrame, 0.18, { BackgroundTransparency = 1 }) end end)
+		-- hover halus buat tab non-aktif
+		btn.MouseEnter:Connect(function() if not line.Visible then TS:Create(btn, TweenInfo.new(0.18), { BackgroundTransparency = 0.94 }):Play() end end)
+		btn.MouseLeave:Connect(function() if not line.Visible then TS:Create(btn, TweenInfo.new(0.18), { BackgroundTransparency = 1 }):Play() end end)
 
 		local pg = mk("ScrollingFrame", {
 			Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Visible = false, ScrollBarThickness = 4,
@@ -2347,16 +2339,13 @@ return function(ctx)
 end
 ]=],
 	["ui/pages.lua"] = [=[
-﻿--[[ pages.lua — membangun halaman: Sell, Profile 1..N, Inventory, Misc. PINK ELEGAN.
-     Mengisi: ctx.renderInventory, ctx.ui.logBox, ctx.ui.rAutoToggle
-     Fitur baru: makeCard helper, hero card dengan gradient, stat cards dengan glow,
-                 logBox dengan RobotoMono, gradient accent di header. ]]
+--[[ pages.lua — membangun halaman: Sell, Profile 1..N, Inventory, Misc.
+     Mengisi: ctx.renderInventory, ctx.ui.logBox, ctx.ui.rAutoToggle ]]
 return function(ctx)
 	local LP  = ctx.LP
 	local CFG = ctx.CFG
 	local C   = ctx.C
-	local mk, corner, stroke, pad, grad = ctx.mk, ctx.corner, ctx.stroke, ctx.pad, ctx.grad
-	local TS = game:GetService("TweenService")
+	local mk, corner, stroke, pad = ctx.mk, ctx.corner, ctx.stroke, ctx.pad
 	local NUM_PROFILES = ctx.NUM_PROFILES
 	local NUM_LISTINGS = ctx.NUM_LISTINGS
 	local NUM_SNIPE    = ctx.NUM_SNIPE
@@ -2374,32 +2363,13 @@ return function(ctx)
 	local makeDropdown       = ctx.makeDropdown
 	local makeInput          = ctx.makeInput
 
-	-- makeCard: helper untuk card container dengan gradient glow opsional
-	local function makeCard(parent, h, order, accent)
-		local ac = accent or C.acc
-		local card = mk("Frame", {
-			Size = h and UDim2.new(1, 0, 0, h) or UDim2.new(1, 0, 0, 0),
-			AutomaticSize = h and Enum.AutomaticSize.None or Enum.AutomaticSize.Y,
-			BackgroundColor3 = C.row, LayoutOrder = order,
-		}, parent)
-		corner(card, 10); stroke(card, ac, 1, 0.5)
-		-- glow overlay gradient
-		local glow = mk("Frame", { Size = UDim2.new(1,0,1,0), BackgroundColor3 = ac, BackgroundTransparency = 0.88, BorderSizePixel = 0 }, card)
-		corner(glow, 10)
-		grad(glow, 90)
-		pad(card, 12, 12, 8, 8)
-		return card
-	end
-
 	------------------------------------------------------------------ SELL PAGE
 	local sellPage = makePage("Sell", "Sell Settings", "🛒", 1)
 
-	-- Hero card: Enable Auto List dengan gradient header accent
-	local heroCard = mk("Frame", { Size = UDim2.new(1,0,0,72), BackgroundColor3 = C.acc, LayoutOrder = 1 }, sellPage)
-	corner(heroCard, 10); stroke(heroCard, C.acc2, 1.5, 0.2)
-	grad(heroCard, 0)
-	pad(heroCard, 12, 12, 0, 0)
-	local rAutoToggle = makeToggle(heroCard, "Enable Auto List", "Periodically scan inventory and list matching pets",
+	-- Enable Auto List (dipindah dari Misc) — toggle utama di atas
+	local autoListCard = mk("Frame", { Size = UDim2.new(1, 0, 0, 60), BackgroundColor3 = C.row, LayoutOrder = 1 }, sellPage)
+	corner(autoListCard, 8); stroke(autoListCard); pad(autoListCard, 12, 12, 0, 0)
+	local rAutoToggle = makeToggle(autoListCard, "Enable Auto List", "Periodically scan inventory and list matching pets",
 		function() return CFG.autoSell end,
 		function(v)
 			CFG.autoSell = v; persistState(); ctx.setStatus(v and "active" or "idle")
@@ -2426,12 +2396,12 @@ return function(ctx)
 		function() return CFG.autoSwitchPortal end,
 		function(v) CFG.autoSwitchPortal = v; persistState() end, 3)
 
-	-- Accordion: Unlist Utilities
+	-- Accordion: Unlist Utilities (di bawah Profile 3)
 	local unlistBody = makeAccordion(sellPage, "Unlist Pets Utilities", 20)
 	makeButton(unlistBody, "Unlist All Pets", C.red, ctx.unlistAll, 1)
 	makeButton(unlistBody, "Unclaim Booth", C.row, function() pcall(function() RemoveBooth:FireServer() end) log("Unclaim booth dikirim.") end, 2)
 
-	-- Accordion: Automation Relocate Sell
+	-- Accordion: Automation Relocate Sell (di bawah Profile 3)
 	local reloBody = makeAccordion(sellPage, "Automation Relocate Sell", 21)
 	makeInput(reloBody, "Idle Timeout (Minutes)", "Move server if no buyers within this duration",
 		function() return CFG.relocateIdleMin or 20 end,
@@ -2450,7 +2420,8 @@ return function(ctx)
 		end, 4)
 	makeButton(reloBody, "Relocate Now", C.acc, function() ctx.relocateNow() end, 5)
 
-	------------------------------------------------------------------ LISTING PROFILES
+	------------------------------------------------------------------ LISTING PROFILES (accordion di Sell)
+	-- simpan fungsi buka accordion + container biar bisa dinavigasi dari klik card Inventory
 	local profileOpen, profileCont, listingOpen = {}, {}, {}
 	ctx.ui.profileOpen, ctx.ui.profileCont, ctx.ui.listingOpen = profileOpen, profileCont, listingOpen
 	for i = 1, NUM_PROFILES do
@@ -2458,7 +2429,7 @@ return function(ctx)
 		local profBody, profSetOpen, profContainer = makeAccordion(sellPage, "Profile " .. i, 4 + i)
 		profileOpen[i], profileCont[i], listingOpen[i] = profSetOpen, profContainer, {}
 
-		local clearers = {}
+		local clearers = {} -- reset tiap listing (dipakai tombol Clear All)
 
 		for j = 1, NUM_LISTINGS do
 			local sub = prof.listings[j]
@@ -2494,7 +2465,9 @@ return function(ctx)
 	------------------------------------------------------------------ BUY PAGE (Auto Snipe)
 	local buyPage = makePage("Buy", "Auto Snipe", "🎯", 2)
 
-	local snipeStatusCard = makeCard(buyPage, nil, 1)
+	-- Status snipe
+	local snipeStatusCard = mk("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundColor3 = C.row, LayoutOrder = 1 }, buyPage)
+	corner(snipeStatusCard, 8); stroke(snipeStatusCard); pad(snipeStatusCard, 12, 12, 10, 10)
 	mk("UIListLayout", { Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder }, snipeStatusCard)
 	mk("TextLabel", { Size = UDim2.new(1, 0, 0, 18), BackgroundTransparency = 1, Text = "🎯  Snipe Status", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = C.txt, TextXAlignment = Enum.TextXAlignment.Left, LayoutOrder = 1 }, snipeStatusCard)
 	local snipeStatusLbl = mk("TextLabel", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, Text = "", Font = Enum.Font.Gotham, TextSize = 12, TextColor3 = C.sub, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true, LineHeight = 1.3, LayoutOrder = 2 }, snipeStatusCard)
@@ -2504,7 +2477,9 @@ return function(ctx)
 	end
 	ctx.refreshSnipeStatus = refreshSnipeStatus
 
-	local snipeToggleCard = makeCard(buyPage, 60, 2)
+	-- Auto Snipe toggle
+	local snipeToggleCard = mk("Frame", { Size = UDim2.new(1, 0, 0, 60), BackgroundColor3 = C.row, LayoutOrder = 2 }, buyPage)
+	corner(snipeToggleCard, 8); stroke(snipeToggleCard); pad(snipeToggleCard, 12, 12, 0, 0)
 	makeToggle(snipeToggleCard, "Auto Snipe Pet", "Scan & beli pet cocok dari booth pemain (profil 1-5)",
 		function() return CFG.snipeEnabled end,
 		function(v)
@@ -2512,6 +2487,7 @@ return function(ctx)
 			if v then ctx.startSnipe() else ctx.stopSnipe() end
 		end, 1)
 
+	-- Accordion: Hop Server (1 enable + filter metode hop)
 	local hopAcc = makeAccordion(buyPage, "Hop Server", 3)
 	makeToggle(hopAcc, "Auto Server Hop", "Enable hop antar-server (master)",
 		function() return CFG.snipeHop end,
@@ -2529,6 +2505,7 @@ return function(ctx)
 		function() return CFG.snipeRevisitSec or 120 end,
 		function(txt) local n = tonumber(txt); CFG.snipeRevisitSec = (n and n >= 5) and math.floor(n) or 120; persistState() end, 5)
 
+	-- 5 profil snipe (accordion; urutan = prioritas)
 	for i = 1, NUM_SNIPE do
 		local prof = CFG.snipeProfiles[i]
 		local body = makeAccordion(buyPage, "Snipe " .. i, 6 + i)
@@ -2541,6 +2518,7 @@ return function(ctx)
 	------------------------------------------------------------------ INVENTORY PAGE
 	local invPage = makePage("Inventory", "Inventory Tracker", "🎒", 5)
 
+	-- format angka dgn pemisah ribuan (1234567 -> 1.234.567)
 	local function fmt(n)
 		local s = tostring(math.floor(tonumber(n) or 0))
 		local k
@@ -2548,18 +2526,16 @@ return function(ctx)
 		return s
 	end
 
-	-- Stat cards dengan glow gradient
+	-- === Stat cards (Target Pets + Saldo Token) ===
 	local statRow = mk("Frame", { Size = UDim2.new(1, 0, 0, 88), BackgroundTransparency = 1, LayoutOrder = 1 }, invPage)
 	mk("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder }, statRow)
 
 	local function statCard(order, icon, title, accent)
 		local card = mk("Frame", { Size = UDim2.new(0.5, -6, 1, 0), BackgroundColor3 = C.row, LayoutOrder = order, ClipsDescendants = true }, statRow)
-		corner(card, 12); stroke(card, accent, 1, 0.4)
-		-- glow gradient dari atas
-		local glow = mk("Frame", { Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = accent, BackgroundTransparency = 0.82, BorderSizePixel = 0 }, card)
+		corner(card, 12); stroke(card)
+		local glow = mk("Frame", { Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = accent, BackgroundTransparency = 0.9, BorderSizePixel = 0 }, card)
 		corner(glow, 12)
-		grad(glow, 90)
-		mk("UIGradient", { Rotation = 90, Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(1, 1) }) }, glow)
+		mk("UIGradient", { Rotation = 90, Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.82), NumberSequenceKeypoint.new(1, 1) }) }, glow)
 		mk("TextLabel", { Size = UDim2.new(1, -32, 0, 16), Position = UDim2.fromOffset(16, 14), BackgroundTransparency = 1, Text = icon .. "  " .. title, Font = Enum.Font.GothamMedium, TextSize = 11, TextColor3 = C.sub, TextXAlignment = Enum.TextXAlignment.Left }, card)
 		return mk("TextLabel", { Size = UDim2.new(1, -32, 0, 36), Position = UDim2.fromOffset(16, 36), BackgroundTransparency = 1, Text = "0", Font = Enum.Font.GothamBold, TextSize = 26, TextColor3 = accent, TextXAlignment = Enum.TextXAlignment.Left }, card)
 	end
@@ -2567,19 +2543,16 @@ return function(ctx)
 	local targetVal = statCard(1, "🎯", "TARGET PETS", C.acc)
 	local tokenVal  = statCard(2, "💰", "SALDO TOKEN", C.green)
 
-	-- Breakdown list card
+	-- === Breakdown per tipe pet ===
 	local listCard = mk("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundColor3 = C.row, LayoutOrder = 2 }, invPage)
-	corner(listCard, 12); stroke(listCard, C.acc, 1, 0.5); pad(listCard, 14, 14, 12, 14)
+	corner(listCard, 12); stroke(listCard); pad(listCard, 14, 14, 12, 14)
 	mk("UIListLayout", { Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder }, listCard)
-	-- header dengan gradient accent line
-	local hdr = mk("Frame", { Size = UDim2.new(1, 0, 0, 22), BackgroundTransparency = 1, LayoutOrder = 1 }, listCard)
-	mk("TextLabel", { Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "📋  Target Breakdown", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = C.txt, TextXAlignment = Enum.TextXAlignment.Left }, hdr)
-	local hdrLine = mk("Frame", { Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 1, 0), BackgroundColor3 = C.acc, BackgroundTransparency = 0.5, BorderSizePixel = 0 }, hdr)
-	grad(hdrLine, 0)
+	mk("TextLabel", { Size = UDim2.new(1, 0, 0, 18), BackgroundTransparency = 1, Text = "📋  Target Breakdown", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = C.txt, TextXAlignment = Enum.TextXAlignment.Left, LayoutOrder = 1 }, listCard)
 	local rowsHolder = mk("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, LayoutOrder = 2 }, listCard)
 	mk("UIListLayout", { Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder }, rowsHolder)
 	local emptyLbl = mk("TextLabel", { Size = UDim2.new(1, 0, 0, 26), BackgroundTransparency = 1, Text = "Belum ada pet target dipilih.", Font = Enum.Font.Gotham, TextSize = 12, TextColor3 = C.sub, TextXAlignment = Enum.TextXAlignment.Left, LayoutOrder = 1 }, rowsHolder)
 
+	-- cari (profil, listing) tempat pet type ini dikonfigurasi (ambil yg pertama ketemu)
 	local function findListing(pt)
 		for i = 1, NUM_PROFILES do
 			local prof = CFG.profiles[i]
@@ -2596,6 +2569,7 @@ return function(ctx)
 		end
 	end
 
+	-- klik card -> pindah ke tab Sell, buka Profile+Listing pet itu, scroll ke situ
 	local function gotoListing(pt)
 		local i, j = findListing(pt)
 		if not i then return end
@@ -2604,15 +2578,17 @@ return function(ctx)
 		if po then po(true) end
 		local lo = ctx.ui.listingOpen and ctx.ui.listingOpen[i] and ctx.ui.listingOpen[i][j]
 		if lo then lo(true) end
+		-- scroll accordion Profile ke atas viewport (tunggu 1 frame biar layout update)
 		task.spawn(function()
 			local sf = ctx.ui.pages and ctx.ui.pages["Sell"]
 			local cont = ctx.ui.profileCont and ctx.ui.profileCont[i]
 			if sf and cont then
 				game:GetService("RunService").Heartbeat:Wait()
-				pcall(function()
+				local ok = pcall(function()
 					local y = cont.AbsolutePosition.Y - sf.AbsolutePosition.Y + sf.CanvasPosition.Y
 					sf.CanvasPosition = Vector2.new(0, math.max(0, y - 8))
 				end)
+				return ok
 			end
 		end)
 	end
@@ -2633,15 +2609,12 @@ return function(ctx)
 			local c = counts[pt] or 0
 			local row = mk("TextButton", { Size = UDim2.new(1, 0, 0, 34), BackgroundColor3 = C.panel, LayoutOrder = i + 1, Text = "", AutoButtonColor = false }, rowsHolder)
 			corner(row, 8)
-			-- accent dot kiri
-			local dot = mk("Frame", { Size = UDim2.fromOffset(3, 16), Position = UDim2.new(0, 10, 0.5, -8), BackgroundColor3 = (c > 0 and C.acc or C.stroke), BorderSizePixel = 0 }, row)
-			corner(dot, 2)
-			if c > 0 then grad(dot, 90) end
+			mk("Frame", { Size = UDim2.fromOffset(3, 16), Position = UDim2.new(0, 10, 0.5, -8), BackgroundColor3 = (c > 0 and C.acc or C.stroke), BorderSizePixel = 0 }, row)
 			mk("TextLabel", { Size = UDim2.new(1, -110, 1, 0), Position = UDim2.fromOffset(22, 0), BackgroundTransparency = 1, Text = pt, Font = Enum.Font.GothamMedium, TextSize = 12, TextColor3 = C.txt, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd }, row)
 			local pill = mk("Frame", { Size = UDim2.fromOffset(54, 22), Position = UDim2.new(1, -82, 0.5, -11), BackgroundColor3 = (c > 0 and C.acc or C.stroke), BorderSizePixel = 0 }, row)
 			corner(pill, 11)
-			if c > 0 then grad(pill, 0) end
 			mk("TextLabel", { Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = tostring(c), Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = Color3.new(1, 1, 1), TextXAlignment = Enum.TextXAlignment.Center }, pill)
+			-- chevron penanda bisa diklik -> ke listing profile
 			local chev = mk("TextLabel", { Size = UDim2.fromOffset(14, 34), Position = UDim2.new(1, -18, 0, 0), BackgroundTransparency = 1, Text = "›", Font = Enum.Font.GothamBold, TextSize = 16, TextColor3 = C.sub, TextXAlignment = Enum.TextXAlignment.Center }, row)
 			row.MouseEnter:Connect(function() row.BackgroundColor3 = C.row; chev.TextColor3 = C.acc end)
 			row.MouseLeave:Connect(function() row.BackgroundColor3 = C.panel; chev.TextColor3 = C.sub end)
@@ -2651,17 +2624,21 @@ return function(ctx)
 	end
 	ctx.renderInventory = renderInventory
 
+	-- auto-refresh tiap tab Inventory diklik (tombol manual dihapus, redundan)
 	ctx.ui.tabBtns["Inventory"].btn.MouseButton1Click:Connect(renderInventory)
 
 	------------------------------------------------------------------ MISC PAGE
 	local miscPage = makePage("Misc", "Miscellaneous Settings", "⚙️", 6)
 
-	local reconCard = makeCard(miscPage, 60, 0)
+	-- Auto-Reconnect toggle
+	local reconCard = mk("Frame", { Size = UDim2.new(1, 0, 0, 60), BackgroundColor3 = C.row, LayoutOrder = 0 }, miscPage)
+	corner(reconCard, 8); stroke(reconCard); pad(reconCard, 12, 12, 0, 0)
 	makeToggle(reconCard, "Auto Reconnect", "Rejoin otomatis kalau ke-kick / disconnect",
 		function() return CFG.autoReconnect ~= false end,
 		function(v) CFG.autoReconnect = v; persistState() end, 1)
 
-	local webhookCard = makeCard(miscPage, nil, 1)
+	local webhookCard = mk("Frame", { Size = UDim2.new(1, 0, 0, 128), BackgroundColor3 = C.row, LayoutOrder = 1 }, miscPage)
+	corner(webhookCard, 8); stroke(webhookCard); pad(webhookCard, 12, 12, 8, 8)
 	mk("UIListLayout", { Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder }, webhookCard)
 
 	makeToggle(webhookCard, "Enable Webhook Notifications", "Post listings to Discord Webhook",
@@ -2680,37 +2657,32 @@ return function(ctx)
 		log("Test webhook terkirim.")
 	end, 3)
 
-	-- Logger Panel dengan RobotoMono styling
-	local loggerCard = makeCard(miscPage, nil, 3)
-	mk("UIListLayout", { Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder }, loggerCard)
-	-- header dengan gradient line
-	local logHdr = mk("Frame", { Size = UDim2.new(1, 0, 0, 22), BackgroundTransparency = 1, LayoutOrder = 1 }, loggerCard)
-	mk("TextLabel", { Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "Console Log", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = C.acc, TextXAlignment = Enum.TextXAlignment.Left }, logHdr)
-	local logHline = mk("Frame", { Size = UDim2.new(0.4, 0, 0, 1), Position = UDim2.new(0, 0, 1, 0), BackgroundColor3 = C.acc, BackgroundTransparency = 0.4, BorderSizePixel = 0 }, logHdr)
-	grad(logHline, 0)
-	-- logBox dengan Code font (RobotoMono equivalent in Roblox)
-	local logBox = mk("TextLabel", { Size = UDim2.new(1, 0, 0, 128), BackgroundColor3 = C.panel, Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Font = Enum.Font.Code, TextSize = 10, TextColor3 = C.acc, TextWrapped = true, LayoutOrder = 2 }, loggerCard)
-	corner(logBox, 6); stroke(logBox, C.acc, 1, 0.6); pad(logBox, 6, 6, 6, 6)
+	-- Logger Panel
+	local loggerCard = mk("Frame", { Size = UDim2.new(1, 0, 0, 150), BackgroundColor3 = C.row, LayoutOrder = 3 }, miscPage)
+	corner(loggerCard, 8); stroke(loggerCard); pad(loggerCard, 12, 12, 8, 8)
+	mk("TextLabel", { Size = UDim2.new(1, 0, 0, 18), BackgroundTransparency = 1, Text = "Console Log", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = C.txt, TextXAlignment = Enum.TextXAlignment.Left, LayoutOrder = 1 }, loggerCard)
+
+	local logBox = mk("TextLabel", { Size = UDim2.new(1, 0, 1, -22), BackgroundColor3 = C.panel, Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Font = Enum.Font.Code, TextSize = 10, TextColor3 = C.sub, TextWrapped = true, LayoutOrder = 2 }, loggerCard)
+	corner(logBox, 6); stroke(logBox); pad(logBox, 6, 6, 6, 6)
 	ctx.ui.logBox = logBox
+	-- tampilkan log yang mungkin sudah ter-buffer sebelum logBox dibuat
 	logBox.Text = table.concat(ctx.state.logLines, "\n")
 end
 ]=],
 	["ui/theme.lua"] = [=[
-﻿--[[ theme.lua — palet warna PINK ELEGAN + helper pembuat Instance.
-     Mengisi: ctx.C (warna), ctx.mk, ctx.corner, ctx.stroke, ctx.pad, ctx.grad ]]
+--[[ theme.lua — palet warna + helper pembuat Instance.
+     Mengisi: ctx.C (warna), ctx.mk, ctx.corner, ctx.stroke, ctx.pad ]]
 return function(ctx)
 	local C = {
-		bg     = Color3.fromRGB(18, 10, 26),       -- Latar belakang utama (plum sangat gelap)
-		panel  = Color3.fromRGB(28, 14, 40),       -- Sidebar / panel sekunder
-		row    = Color3.fromRGB(42, 22, 58),       -- Card / row item
-		stroke = Color3.fromRGB(255, 80, 160),     -- Border pink accent
-		acc    = Color3.fromRGB(255, 60, 140),     -- Hot pink utama
-		acc2   = Color3.fromRGB(200, 40, 200),     -- Magenta (gradient partner)
-		txt    = Color3.fromRGB(255, 230, 248),    -- Teks utama (putih hangat pink)
-		sub    = Color3.fromRGB(190, 130, 175),    -- Teks sekunder (pink muted)
-		green  = Color3.fromRGB(255, 110, 180),    -- "Positif" — pink cerah
-		red    = Color3.fromRGB(255, 55, 100),     -- "Negatif" — rose
-		glow   = Color3.fromRGB(255, 60, 140),     -- Warna glow effect
+		bg     = Color3.fromRGB(15, 15, 20),      -- Jendela utama transparan
+		panel  = Color3.fromRGB(10, 10, 12),      -- Left sidebar
+		row    = Color3.fromRGB(24, 24, 30),      -- Kartu setting / baris
+		stroke = Color3.fromRGB(35, 35, 45),      -- Pembatas kartu
+		acc    = Color3.fromRGB(120, 80, 255),    -- Neon Purple
+		txt    = Color3.fromRGB(240, 240, 245),
+		sub    = Color3.fromRGB(140, 140, 150),
+		green  = Color3.fromRGB(80, 200, 120),
+		red    = Color3.fromRGB(220, 80, 80),
 	}
 
 	local function mk(cls, props, parent)
@@ -2724,11 +2696,9 @@ return function(ctx)
 		mk("UICorner", { CornerRadius = UDim.new(0, r or 8) }, o)
 	end
 
-	local function stroke(o, col, thick, trans)
+	local function stroke(o, col, thick)
 		return mk("UIStroke", {
-			Color = col or C.stroke,
-			Thickness = thick or 1,
-			Transparency = trans or 0.5,
+			Color = col or C.stroke, Thickness = thick or 1,
 			ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
 		}, o)
 	end
@@ -2740,36 +2710,24 @@ return function(ctx)
 		}, o)
 	end
 
-	local function grad(o, rot)
-		return mk("UIGradient", {
-			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, C.acc),
-				ColorSequenceKeypoint.new(1, C.acc2),
-			}),
-			Rotation = rot or 90,
-		}, o)
-	end
-
 	ctx.C      = C
 	ctx.mk     = mk
 	ctx.corner = corner
 	ctx.stroke = stroke
 	ctx.pad    = pad
-	ctx.grad   = grad
 end
 ]=],
 	["ui/window.lua"] = [=[
-﻿--[[ window.lua — jendela utama PINK ELEGAN: sidebar, title bar, drag, min/max/close, content, status, log.
+--[[ window.lua — jendela utama: sidebar, title bar, drag, min/max/close, content, status, log.
      Mengisi: ctx.state.gui, ctx.ui.{main,maxIcon,content,tabButtonsFrame,sidebar,pages,tabBtns,statusText,logBox}
               ctx.log, ctx.setStatus ]]
 return function(ctx)
 	local Players          = ctx.Services.Players
 	local UserInputService = ctx.Services.UserInputService
-	local TS               = game:GetService("TweenService")
 	local LP  = ctx.LP
 	local CFG = ctx.CFG
 	local C   = ctx.C
-	local mk, corner, stroke, pad, grad = ctx.mk, ctx.corner, ctx.stroke, ctx.pad, ctx.grad
+	local mk, corner, stroke, pad = ctx.mk, ctx.corner, ctx.stroke, ctx.pad
 
 	ctx.ui.pages   = {}
 	ctx.ui.tabBtns = {}
@@ -2793,23 +2751,18 @@ return function(ctx)
 
 	----------------------------------------------------------------- Floating Maximize Button
 	local maxIcon = mk("TextButton", {
-		Size = UDim2.fromOffset(48, 48), Position = UDim2.new(0, 15, 0.5, -24),
-		BackgroundColor3 = C.acc, Text = "\u2661", Font = Enum.Font.GothamBlack, TextSize = 20,
-		TextColor3 = Color3.new(1,1,1), Visible = false, Active = true,
+		Size = UDim2.fromOffset(45, 45), Position = UDim2.new(0, 15, 0.5, -22),
+		BackgroundColor3 = C.panel, Text = "AH", Font = Enum.Font.GothamBold, TextSize = 14,
+		TextColor3 = C.acc, Visible = false, Active = true,
 	}, gui)
-	corner(maxIcon, 14)
-	stroke(maxIcon, C.acc, 2, 0)
-	local maxGlowRing = mk("Frame", {
-		Size = UDim2.new(1, 14, 1, 14), Position = UDim2.new(0, -7, 0, -7),
-		BackgroundColor3 = C.acc, BackgroundTransparency = 0.7, BorderSizePixel = 0, ZIndex = -1,
-	}, maxIcon)
-	corner(maxGlowRing, 20)
+	corner(maxIcon, 22)
+	stroke(maxIcon, C.acc, 1.5)
 	pcall(function()
 		local logo = ctx.getLogo and ctx.getLogo()
 		if logo then
 			maxIcon.Text = ""
-			local img = mk("ImageLabel", { Size = UDim2.new(1,-8,1,-8), Position = UDim2.fromOffset(4,4), BackgroundTransparency = 1, Image = logo, ScaleType = Enum.ScaleType.Fit }, maxIcon)
-			corner(img, 12)
+			local img = mk("ImageLabel", { Size = UDim2.new(1, -6, 1, -6), Position = UDim2.fromOffset(3, 3), BackgroundTransparency = 1, Image = logo, ScaleType = Enum.ScaleType.Fit }, maxIcon)
+			corner(img, 20)
 		end
 	end)
 	do
@@ -2821,17 +2774,13 @@ return function(ctx)
 
 	----------------------------------------------------------------- Main Jendela
 	local main = mk("Frame", {
-		Size = UDim2.fromOffset(680, 460), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5),
-		BackgroundColor3 = C.bg, BackgroundTransparency = 0.04, BorderSizePixel = 0, Active = true,
+		Size = UDim2.fromOffset(650, 450), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5),
+		BackgroundColor3 = C.bg, BackgroundTransparency = 0.1, BorderSizePixel = 0, Active = true,
 	}, gui)
-	corner(main, 14)
-	stroke(main, C.acc, 1.5, 0.3)
-	local innerGlow = mk("Frame", {
-		Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = C.acc,
-		BackgroundTransparency = 0.92, BorderSizePixel = 0,
-	}, main)
-	corner(innerGlow, 14)
+	corner(main, 10)
+	stroke(main, C.stroke, 1)
 
+	-- Auto-scale: kecilin window proporsional biar muat di layar kecil (HP).
 	local uiScale = Instance.new("UIScale"); uiScale.Parent = main
 	local function fitScale()
 		local cam = workspace.CurrentCamera
@@ -2846,31 +2795,15 @@ return function(ctx)
 		if cam then cam:GetPropertyChangedSignal("ViewportSize"):Connect(fitScale) end
 	end)
 
-	----------------------------------------------------------------- Title Bar
+	-- Title bar & Dragger (satu container: judul + tombol min/close)
 	local titleBar = mk("Frame", {
-		Size = UDim2.new(1, 0, 0, 44), BackgroundColor3 = C.panel, BorderSizePixel = 0, ZIndex = 2,
+		Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = C.panel, BorderSizePixel = 0, ZIndex = 2,
 	}, main)
-	corner(titleBar, 14)
-	local titleGrad = mk("Frame", {
-		Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = C.acc,
-		BackgroundTransparency = 0.82, BorderSizePixel = 0, ZIndex = 1,
-	}, titleBar)
-	corner(titleGrad, 14)
-	grad(titleGrad, 0)
-	mk("Frame", {
-		Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 1, -1),
-		BackgroundColor3 = C.acc, BackgroundTransparency = 0.4, BorderSizePixel = 0, ZIndex = 3,
-	}, titleBar)
+	corner(titleBar, 10)
 	mk("TextLabel", {
-		Size = UDim2.fromOffset(28, 44), Position = UDim2.fromOffset(14, 0),
-		BackgroundTransparency = 1, Text = "\u2736", Font = Enum.Font.GothamBlack,
-		TextSize = 16, TextColor3 = C.acc, ZIndex = 3,
-	}, titleBar)
-	mk("TextLabel", {
-		Size = UDim2.new(1, -120, 1, 0), Position = UDim2.fromOffset(40, 0),
-		BackgroundTransparency = 1, Text = "CeszParadise  \u00b7  GAG Trade",
-		Font = Enum.Font.GothamBlack, TextSize = 14, TextColor3 = C.txt,
-		TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 3,
+		Size = UDim2.new(1, -80, 1, 0), Position = UDim2.fromOffset(14, 0), BackgroundTransparency = 1,
+		Text = "CeszParadise | GAG Trade", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = C.acc,
+		TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 2,
 	}, titleBar)
 	do
 		local dragging, ds, sp
@@ -2879,106 +2812,80 @@ return function(ctx)
 		UserInputService.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then dragging = false end end)
 	end
 
-	local function makeTitleBtn(label, posX, bgCol)
-		local btn = mk("TextButton", {
-			Size = UDim2.fromOffset(28, 28), Position = UDim2.new(1, posX, 0, 8),
-			BackgroundColor3 = bgCol or C.row, Text = label,
-			Font = Enum.Font.GothamBlack, TextSize = 12, TextColor3 = C.txt, ZIndex = 4,
-			AutoButtonColor = false,
-		}, titleBar)
-		corner(btn, 7)
-		stroke(btn, C.acc, 1, 0.6)
-		btn.MouseEnter:Connect(function()
-			TS:Create(btn, TweenInfo.new(0.12), { BackgroundColor3 = C.acc, TextColor3 = Color3.new(1,1,1) }):Play()
-		end)
-		btn.MouseLeave:Connect(function()
-			TS:Create(btn, TweenInfo.new(0.12), { BackgroundColor3 = bgCol or C.row, TextColor3 = C.txt }):Play()
-		end)
-		return btn
-	end
+	local minBtn = mk("TextButton", {
+		Size = UDim2.fromOffset(26, 26), Position = UDim2.new(1, -64, 0, 7), BackgroundColor3 = C.row,
+		Text = "-", Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = C.txt, ZIndex = 3,
+	}, titleBar)
+	corner(minBtn, 6)
+	local closeBtn = mk("TextButton", {
+		Size = UDim2.fromOffset(26, 26), Position = UDim2.new(1, -32, 0, 7), BackgroundColor3 = C.row,
+		Text = "X", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = C.txt, ZIndex = 3,
+	}, titleBar)
+	corner(closeBtn, 6)
 
-	local minBtn   = makeTitleBtn("\u2013", -68)
-	local closeBtn = makeTitleBtn("\u2715", -34, C.row)
+	-- Premium Hover Animations
+	minBtn.MouseEnter:Connect(function() minBtn.BackgroundColor3 = Color3.fromRGB(45, 50, 65) end)
+	minBtn.MouseLeave:Connect(function() minBtn.BackgroundColor3 = C.row end)
+	closeBtn.MouseEnter:Connect(function() closeBtn.BackgroundColor3 = C.red; closeBtn.TextColor3 = Color3.new(1, 1, 1) end)
+	closeBtn.MouseLeave:Connect(function() closeBtn.BackgroundColor3 = C.row; closeBtn.TextColor3 = C.txt end)
+
 	minBtn.MouseButton1Click:Connect(function() main.Visible = false; maxIcon.Visible = true end)
 	maxIcon.MouseButton1Click:Connect(function() maxIcon.Visible = false; main.Visible = true end)
 	closeBtn.MouseButton1Click:Connect(function() gui:Destroy() end)
 
 	----------------------------------------------------------------- Left Sidebar
 	local sidebar = mk("Frame", {
-		Size = UDim2.new(0, 158, 1, -44), Position = UDim2.fromOffset(0, 44),
-		BackgroundColor3 = C.panel, BorderSizePixel = 0,
+		Size = UDim2.new(0, 160, 1, -40), Position = UDim2.fromOffset(0, 40), BackgroundColor3 = C.panel, BorderSizePixel = 0
 	}, main)
-	corner(sidebar, 14)
-	local sidebarBorder = mk("Frame", {
-		Size = UDim2.new(0, 1, 1, 0), Position = UDim2.new(1, -1, 0, 0),
-		BackgroundColor3 = C.acc, BackgroundTransparency = 0.5, BorderSizePixel = 0,
-	}, sidebar)
-	grad(sidebarBorder, 90)
-	pad(sidebar, 10, 10, 10, 10)
-
-	mk("TextLabel", {
-		Size = UDim2.new(1, 0, 0, 18), BackgroundTransparency = 1,
-		Text = "M E N U", Font = Enum.Font.GothamBlack, TextSize = 9,
-		TextColor3 = C.acc, TextXAlignment = Enum.TextXAlignment.Left,
-		LayoutOrder = 0,
-	}, sidebar)
+	corner(sidebar, 10)
+	pad(sidebar, 10, 10, 8, 10)
 
 	local tabButtonsFrame = mk("ScrollingFrame", {
-		Size = UDim2.new(1, 0, 1, -66), Position = UDim2.fromOffset(0, 22),
-		BackgroundTransparency = 1, BorderSizePixel = 0,
-		ScrollBarThickness = 2, ScrollBarImageColor3 = C.acc, ScrollBarImageTransparency = 0.5,
+		Size = UDim2.new(1, 0, 1, -52), Position = UDim2.fromOffset(0, 0), BackgroundTransparency = 1, BorderSizePixel = 0,
+		ScrollBarThickness = 3, ScrollBarImageColor3 = C.acc, ScrollBarImageTransparency = 0.4,
 		ScrollingDirection = Enum.ScrollingDirection.Y, CanvasSize = UDim2.new(),
 		AutomaticCanvasSize = Enum.AutomaticSize.Y, ScrollingEnabled = true,
 	}, sidebar)
-	mk("UIListLayout", { Padding = UDim.new(0, 5), SortOrder = Enum.SortOrder.LayoutOrder }, tabButtonsFrame)
+	mk("UIListLayout", { Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder }, tabButtonsFrame)
 
+	-- Profile Card di Sidebar bawah
 	local profileCard = mk("Frame", {
-		Size = UDim2.new(1, 0, 0, 46), Position = UDim2.new(0, 0, 1, -46),
+		Size = UDim2.new(1, 0, 0, 44), Position = UDim2.new(0, 0, 1, -44),
 		BackgroundColor3 = C.row, BorderSizePixel = 0,
 	}, sidebar)
-	corner(profileCard, 10)
-	stroke(profileCard, C.acc, 1, 0.5)
-	pad(profileCard, 8, 6, 6, 6)
+	corner(profileCard, 8)
+	stroke(profileCard)
+	pad(profileCard, 6, 6, 6, 6)
 
 	local avatar = mk("ImageLabel", {
-		Size = UDim2.fromOffset(32, 32), BackgroundColor3 = C.panel, BorderSizePixel = 0,
+		Size = UDim2.fromOffset(32, 32), BackgroundColor3 = C.panel, BorderSizePixel = 0
 	}, profileCard)
 	corner(avatar, 16)
-	stroke(avatar, C.acc, 1.5, 0.2)
+	stroke(avatar, C.stroke, 1)
 	pcall(function()
 		avatar.Image = Players:GetUserThumbnailAsync(LP.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
 	end)
 
 	local nameLabel = mk("TextLabel", {
-		Size = UDim2.new(1, -40, 0, 16), Position = UDim2.fromOffset(40, 4),
-		BackgroundTransparency = 1, Text = LP.Name,
-		Font = Enum.Font.GothamBlack, TextSize = 11, TextColor3 = C.txt,
+		Size = UDim2.new(1, -38, 1, 0), Position = UDim2.fromOffset(38, 0), BackgroundTransparency = 1,
+		Text = LP.Name, Font = Enum.Font.GothamMedium, TextSize = 11, TextColor3 = C.txt,
 		TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd,
-	}, profileCard)
-	mk("TextLabel", {
-		Size = UDim2.new(1, -40, 0, 14), Position = UDim2.fromOffset(40, 22),
-		BackgroundTransparency = 1, Text = "Trade World",
-		Font = Enum.Font.Gotham, TextSize = 9, TextColor3 = C.acc,
-		TextXAlignment = Enum.TextXAlignment.Left,
 	}, profileCard)
 	pcall(function()
 		local short = LP.DisplayName
-		if #short > 12 then short = short:sub(1, 10) .. ".." end
+		if #short > 11 then short = short:sub(1, 9) .. ".." end
 		nameLabel.Text = short
 	end)
 
-	----------------------------------------------------------------- Right Content Frame
+	-- Right Content Frame
 	local content = mk("Frame", {
-		Size = UDim2.new(1, -174, 1, -68), Position = UDim2.fromOffset(168, 46),
-		BackgroundTransparency = 1,
+		Size = UDim2.new(1, -172, 1, -66), Position = UDim2.fromOffset(166, 44), BackgroundTransparency = 1
 	}, main)
 
-	----------------------------------------------------------------- Resize grip
+	-- Resize grip (pojok kanan-bawah). Drag buat ubah ukuran window.
 	local grip = mk("TextButton", {
-		Size = UDim2.fromOffset(22, 22), Position = UDim2.new(1, -24, 1, -24),
-		BackgroundTransparency = 1, Text = "\u25e2",
-		Font = Enum.Font.GothamBlack, TextSize = 14, TextColor3 = C.sub,
-		AutoButtonColor = false, Active = true, ZIndex = 20,
+		Size = UDim2.fromOffset(20, 20), Position = UDim2.new(1, -22, 1, -22), BackgroundTransparency = 1,
+		Text = "◢", Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = C.sub, AutoButtonColor = false, Active = true, ZIndex = 20,
 	}, main)
 	grip.MouseEnter:Connect(function() grip.TextColor3 = C.acc end)
 	grip.MouseLeave:Connect(function() grip.TextColor3 = C.sub end)
@@ -2993,8 +2900,8 @@ return function(ctx)
 			if rz and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then
 				local scale = uiScale.Scale > 0 and uiScale.Scale or 1
 				local d = i.Position - ds
-				local w = math.clamp(ss.X + d.X / scale, 460, 1600)
-				local h = math.clamp(ss.Y + d.Y / scale, 320, 1000)
+				local w = math.clamp(ss.X + d.X / scale, 440, 1600)
+				local h = math.clamp(ss.Y + d.Y / scale, 300, 1000)
 				main.Size = UDim2.fromOffset(w, h)
 				fitScale()
 			end
@@ -3005,30 +2912,16 @@ return function(ctx)
 	end
 
 	----------------------------------------------------------------- Status footer
-	local statusFooter = mk("Frame", {
-		Size = UDim2.new(1, -174, 0, 20), Position = UDim2.new(0, 168, 1, -22),
-		BackgroundTransparency = 1,
-	}, main)
-	local statusPill = mk("Frame", {
-		Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X,
-		BackgroundColor3 = C.acc, BackgroundTransparency = 0.8, BorderSizePixel = 0,
-	}, statusFooter)
-	corner(statusPill, 8)
-	pad(statusPill, 8, 8, 0, 0)
-	local statusText = mk("TextLabel", {
-		Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X,
-		BackgroundTransparency = 1, Text = "\u25cf idle",
-		Font = Enum.Font.GothamBlack, TextSize = 10, TextColor3 = C.acc,
-		TextXAlignment = Enum.TextXAlignment.Left,
-	}, statusPill)
+	local statusFooter = mk("Frame", { Size = UDim2.new(1, -172, 0, 18), Position = UDim2.new(0, 166, 1, -22), BackgroundTransparency = 1 }, main)
+	local statusText = mk("TextLabel", { Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "Status: idle", Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = C.sub, TextXAlignment = Enum.TextXAlignment.Left }, statusFooter)
 
 	function ctx.setStatus(s)
-		local isActive = s == "active" or s:find("ON") ~= nil
-		statusText.Text = (isActive and "\u25cf " or "\u25cb ") .. s .. "  |  Loop: " .. (CFG.autoSell and "ON \u2736" or "OFF")
-		statusText.TextColor3 = isActive and C.green or C.sub
+		statusText.Text = ("Status: %s | Loop: %s"):format(s, CFG.autoSell and "ON" or "OFF")
 	end
 
 	----------------------------------------------------------------- Logger
+	-- logBox dibuat di pages.lua (halaman Misc) lalu di-set ke ctx.ui.logBox.
+	-- ctx.log tetap aman dipanggil sebelum logBox ada (hanya buffer ke logLines).
 	local logLines = ctx.state.logLines
 	function ctx.log(msg)
 		table.insert(logLines, os.date("%H:%M:%S ") .. msg)
