@@ -268,7 +268,7 @@ return function(ctx)
 	end
 
 	------------------------------------------------------------------ server hop (cari seller)
-	local HUB_FOLDER = "AllegiaantHUB"
+	local HUB_FOLDER = "CeszParadiseHUB"
 	local function ensureHubFolder()
 		if type(makefolder) == "function" and (type(isfolder) ~= "function" or not isfolder(HUB_FOLDER)) then
 			pcall(function() makefolder(HUB_FOLDER) end)
@@ -375,7 +375,7 @@ return function(ctx)
 			local req = (syn and syn.request) or (http and http.request) or http_request or request
 			if not req then return end
 			req({
-				Url = "https://api.allegiaant.my.id/api/agent/suppress",
+				Url = "https://api.CeszParadise.my.id/api/agent/suppress",
 				Method = "POST",
 				Headers = { ["Content-Type"] = "application/json", ["x-api-key"] = "ae3858d4a2def3306d6cbff26ff2bd72eee9319b1aae27d1" },
 				Body = game:GetService("HttpService"):JSONEncode({
@@ -661,8 +661,8 @@ return function(ctx)
 		end
 	end
 
-	-- Semua data hub disimpan di folder AllegiaantHUB/ (biar rapih, ga berserakan di root).
-	local FOLDER = "AllegiaantHUB"
+	-- Semua data hub disimpan di folder CeszParadiseHUB/ (biar rapih, ga berserakan di root).
+	local FOLDER = "CeszParadiseHUB"
 	local STATE_FILE = FOLDER .. "/trade_state.json"
 	-- lokasi lama (buat migrasi otomatis, urut dari yg paling baru)
 	local OLD_FILES = { "AllegiaanHUB/trade_state.json", "GAGSeller_state.json" }
@@ -942,7 +942,7 @@ return function(ctx)
 
 	----------------------------------------------------------------- history ke dashboard
 	-- Kirim transaksi (buy/sell) ke Laravel buat History tab. Non-blocking, best-effort.
-	local EVENT_URL = "https://api.allegiaant.my.id/api/event"
+	local EVENT_URL = "https://api.CeszParadise.my.id/api/event"
 	local EVENT_KEY = "ae3858d4a2def3306d6cbff26ff2bd72eee9319b1aae27d1"
 	local function reportEvent(kind, data)
 		task.spawn(function()
@@ -1065,12 +1065,12 @@ return function(ctx)
 					}
 				},
 				footer = {
-					text = ("Allegiaant GAG Trade • %s"):format(os.date("%d/%m/%y, %H.%M"))
+					text = ("CeszParadise GAG Trade • %s"):format(os.date("%d/%m/%y, %H.%M"))
 				}
 			}
 
 			sendWebhook({
-				username = "AllegiaantHub GAG Seller",
+				username = "CeszParadiseHub GAG Seller",
 				embeds = { embed }
 			})
 
@@ -1087,7 +1087,7 @@ return function(ctx)
 end
 ]=],
 	["modules/core/websync.lua"] = [=[
---[[ websync.lua — sinkron opsi/config trade ke dashboard web (AllegiaantHUB Monitor).
+--[[ websync.lua — sinkron opsi/config trade ke dashboard web (CeszParadiseHUB Monitor).
 
      STEP 1: push OPTIONS (pet/mutasi/skin) -> dropdown web sama persis in-game.
      STEP 2: sync CONFIG DUA ARAH per-akun:
@@ -1097,7 +1097,7 @@ end
 
      Semua HTTP di THREAD TERPISAH + pcall = non-blocking, ga ganggu automation. ]]
 return function(ctx)
-	local WEB_BASE = "https://api.allegiaant.my.id"
+	local WEB_BASE = "https://api.CeszParadise.my.id"
 	local API_KEY  = "ae3858d4a2def3306d6cbff26ff2bd72eee9319b1aae27d1"
 	local POLL_EVERY = 10  -- detik (hemat invocation Vercel; config/command telat max ~10s)
 
