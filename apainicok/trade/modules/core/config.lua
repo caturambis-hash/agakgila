@@ -55,9 +55,9 @@ return function(ctx)
     	end
 	end
 	ensureFolder()
-
--- Lanjutkan kode config lainnya di bawah ini (jangan dihapus)
--- ... 
+	
+	-- === TAMBAHKAN 1 BARIS INI UNTUK MENCEGAH ERROR ===
+	local OLD_FILES = {}
 
 	local function persistState()
 		ensureFolder()
