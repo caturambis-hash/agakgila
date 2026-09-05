@@ -40,38 +40,30 @@ return function(ctx)
 		end
 	end
 
-	-- Ambil ID akun Roblox yang sedang login
+-- Ambil ID akun Roblox yang sedang login
 	local Players = game:GetService("Players")
+	repeat wait() until Players.LocalPlayer
 	local userId = Players.LocalPlayer.UserId
 
--- Buat folder penyimpanan berdasarkan ID akun tersebut
-	local FOLDER = "CeszParadiseHUB_" .. userId
-	local STATE_FILE = FOLDER .. "/trade_state.json"
-
--- Pastikan folder-nya dibuat (agar tidak error)
-	local function ensureFolder()
-    	if not isfolder(FOLDER) then
-        	makefolder(FOLDER)
-    	end
-	end
-	ensureFolder()
-	
-	-- === TAMBAHKAN 1 BARIS INI UNTUK MENCEGAH ERROR ===
-	local OLD_FILES = {}
+-- Simpan langsung di root Arceus X
+	local STATE_FILE = "CeszParadiseHUB_" .. userId .. ".json"
 
 	local function persistState()
-		ensureFolder()
-		pcall(function() writefile(STATE_FILE, HttpService:JSONEncode(CFG)) end)
+    	pcall(function() 
+        	writefile(STATE_FILE, HttpService:JSONEncode(CFG)) 
+    	end)
 	end
 
 	local function loadState()
-		for _, f in ipairs({ STATE_FILE, OLD_FILES[1], OLD_FILES[2] }) do
-			if type(isfile) == "function" and isfile(f) then
-				local ok, t = pcall(function() return HttpService:JSONDecode(readfile(f)) end)
-				if ok and type(t) == "table" then return t end
-			end
-		end
-		return nil
+    	if type(isfile) == "function" and isfile(STATE_FILE) then
+        	local ok, t = pcall(function() 
+            	return HttpService:JSONDecode(readfile(STATE_FILE)) 
+        	end)
+        	if ok and type(t) == "table" then 
+            	return t 
+        	end
+    	end
+    	return nil
 	end
 
 	----------------------------------------------------------------- restore
