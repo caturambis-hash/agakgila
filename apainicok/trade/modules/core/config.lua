@@ -40,16 +40,39 @@ return function(ctx)
 		end
 	end
 
--- Ambil ID dan Nama akun
-	local Players = game:GetService("Players")
-	repeat wait() until Players.LocalPlayer
-	local userId = Players.LocalPlayer.UserId
-	local playerName = Players.LocalPlayer.Name
+local function getStateFile()
+		local Players = game:GetService("Players")
+		repeat wait() until Players.LocalPlayer
+		local userId = Players.LocalPlayer.UserId
+		local file = "CeszParadiseHUB_" .. userId .. ".json"
+		print("📂 [DEBUG] UserId saat ini:", userId, "| File target:", file) -- Tambahan debug
+		return file
+	end
 
-	print("🔑 UserId:", userId, "| Nama:", playerName)
+	local function persistState()
+		local file = getStateFile() -- Ambil UserId REAL setiap mau nulis
+		pcall(function() 
+			writefile(file, HttpService:JSONEncode(CFG)) 
+		end)
+	end
 
--- Gunakan kombinasi userId dan nama untuk memastikan unik
-	local STATE_FILE = "CeszParadiseHUB_" .. userId .. "_" .. playerName .. ".json"
+	local function loadState()
+		local file = getStateFile() -- Ambil UserId REAL setiap mau baca
+		if type(isfile) == "function" and isfile(file) then
+			local ok, t = pcall(function() 
+				return HttpService:JSONDecode(readfile(file)) 
+			end)
+			if ok and type(t) == "table" then 
+				print("✅ Berhasil baca data dari:", file)
+				return t 
+			else
+				print("❌ Gagal decode JSON dari:", file)
+			end
+		else
+			print("❌ File tidak ditemukan:", file)
+		end
+		return nil
+	end
 	local function persistState()
     	pcall(function() 
         	writefile(STATE_FILE, HttpService:JSONEncode(CFG)) 
