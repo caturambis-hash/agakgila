@@ -41,38 +41,38 @@ return function(ctx)
 	end
 
 	local function getStateFile()
-		local Players = game:GetService("Players")
-		repeat wait() until Players.LocalPlayer
-		local userId = Players.LocalPlayer.UserId
-		local file = "CeszParadiseHUB_" .. userId .. ".json"
-		print("📂 [DEBUG] UserId saat ini:", userId, "| File target:", file)
-		return file
-	end
+    local Players = game:GetService("Players")
+    repeat wait() until Players.LocalPlayer
+    local userId = Players.LocalPlayer.UserId
+    local file = "CeszParadiseHUB_" .. userId .. ".json"
+    print("📂 [DEBUG] UserId saat ini:", userId, "| File target:", file)
+    return file
+end
 
-	local function persistState()
-		local file = getStateFile()
-		pcall(function() 
-			writefile(file, HttpService:JSONEncode(CFG)) 
-		end)
-	end
+local function persistState()
+    local file = getStateFile()
+    pcall(function()
+        writefile(file, HttpService:JSONEncode(CFG))
+    end)
+end
 
-	local function loadState()
-		local file = getStateFile()
-		if type(isfile) == "function" and isfile(file) then
-			local ok, t = pcall(function() 
-				return HttpService:JSONDecode(readfile(file)) 
-			end)
-			if ok and type(t) == "table" then 
-				print("✅ Berhasil baca data dari:", file)
-				return t 
-			else
-				print("❌ Gagal decode JSON dari:", file)
-			end
-		else
-			print("❌ File tidak ditemukan:", file)
-		end
-		return nil
-	end
+local function loadState()
+    local file = getStateFile()
+    if type(isfile) == "function" and isfile(file) then
+        local ok, t = pcall(function()
+            return HttpService:JSONDecode(readfile(file))
+        end)
+        if ok and type(t) == "table" then
+            print("✅ Berhasil baca data dari:", file)
+            return t
+        else
+            print("❌ Gagal decode JSON dari:", file)
+        end
+    else
+        print("❌ File tidak ditemukan:", file)
+    end
+    return nil
+end
 	----------------------------------------------------------------- restore
 	do
 		local st = loadState()
