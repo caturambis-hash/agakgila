@@ -40,14 +40,16 @@ return function(ctx)
 		end
 	end
 
--- Ambil ID akun Roblox yang sedang login
+-- Ambil ID dan Nama akun
 	local Players = game:GetService("Players")
 	repeat wait() until Players.LocalPlayer
 	local userId = Players.LocalPlayer.UserId
+	local playerName = Players.LocalPlayer.Name
 
--- Simpan langsung di root Arceus X
-	local STATE_FILE = "CeszParadiseHUB_" .. userId .. ".json"
+	print("🔑 UserId:", userId, "| Nama:", playerName)
 
+-- Gunakan kombinasi userId dan nama untuk memastikan unik
+	local STATE_FILE = "CeszParadiseHUB_" .. userId .. "_" .. playerName .. ".json"
 	local function persistState()
     	pcall(function() 
         	writefile(STATE_FILE, HttpService:JSONEncode(CFG)) 
