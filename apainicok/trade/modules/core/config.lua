@@ -40,17 +40,24 @@ return function(ctx)
 		end
 	end
 
-	-- Semua data hub disimpan di folder AllegiaantHUB/ (biar rapih, ga berserakan di root).
-	local FOLDER = "AllegiaantHUB"
-	local STATE_FILE = FOLDER .. "/trade_state.json"
-	-- lokasi lama (buat migrasi otomatis, urut dari yg paling baru)
-	local OLD_FILES = { "AllegiaanHUB/trade_state.json", "GAGSeller_state.json" }
+	-- Ambil ID akun Roblox yang sedang login
+	local Players = game:GetService("Players")
+	local userId = Players.LocalPlayer.UserId
 
+-- Buat folder penyimpanan berdasarkan ID akun tersebut
+	local FOLDER = "CeszParadiseHUB_" .. userId
+	local STATE_FILE = FOLDER .. "/trade_state.json"
+
+-- Pastikan folder-nya dibuat (agar tidak error)
 	local function ensureFolder()
-		if type(makefolder) == "function" and (type(isfolder) ~= "function" or not isfolder(FOLDER)) then
-			pcall(function() makefolder(FOLDER) end)
-		end
+    	if not isfolder(FOLDER) then
+        	makefolder(FOLDER)
+    	end
 	end
+	ensureFolder()
+
+-- Lanjutkan kode config lainnya di bawah ini (jangan dihapus)
+-- ... 
 
 	local function persistState()
 		ensureFolder()
